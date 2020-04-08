@@ -109,6 +109,10 @@ Clojure datomic ions repl remote
 
 https://github.com/markbastian/replion
 
+Learn clojure coding tutorial REPL examples Robert C. Martin (Uncle Bob)
+
+http://blog.cleancoder.com/uncle-bob/2020/04/06/ALittleClojure.html
+
 #### Education Career
 
 First, Musk should do as he says and fix job descriptions and culture to not require degrees. Second, there's a caveat to "smart guys don't need degrees". Really, those smart guys are just lucky. College (or not) wasn't the factor, just luck.
