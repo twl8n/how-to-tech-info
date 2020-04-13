@@ -103,7 +103,26 @@ Coronavirus epidemic calculator interactive
 
 https://gabgoh.github.io/COVID/index.html
 
+#### Text editors, Emacs, vi, vim, Integrated Development Environment (IDE)
+
+Emacs for MacOS (aka OSX, Apple, Mac). If you have a Mac, this is the Emacs you want. 
+
+https://emacsformacosx.com/
+
+#### Cloud Integrated Development Environment (IDE)
+
+Are You Ready-To-Code?Start Instantly. Anywhere. Gitpod launches ready-to-code dev environments
+for your GitHub or GitLab project with a single click.
+
+https://gitpod.io/
+
+See also: Cloud9, AWS LightSail
+
 #### Clojure
+
+A Clojure babushka for the grey areas of Bash. Really, a Clojure interpreter as a native application with fast launch times. It is intended as a bash scripting replacement, but really is a (near) full release of Clojure as an interpreter. This also may be the easiest way to start learning Clojure. You only need a text editor and babashka. The normal Clojure tool chain has complexities and pecularities. The tooling around Clojure is (in some ways) harder to learn than the language.
+
+https://github.com/borkdude/babashka
 
 Clojure datomic ions repl remote
 
@@ -116,7 +135,6 @@ http://blog.cleancoder.com/uncle-bob/2020/04/06/ALittleClojure.html
 #### Education Career
 
 First, Musk should do as he says and fix job descriptions and culture to not require degrees. Second, there's a caveat to "smart guys don't need degrees". Really, those smart guys are just lucky. College (or not) wasn't the factor, just luck.
-
 https://www.theguardian.com/technology/2020/mar/10/elon-musk-college-for-fun-not-learning
 
 Ability to learn a spoken language correlates with programming better than math skills
@@ -124,3 +142,9 @@ Ability to learn a spoken language correlates with programming better than math 
 Chantel S. Prat, Tara M. Madhyastha, Malayka J. Mottarella, Chu-Hsuan Kuo. Relating Natural Language Aptitude to Individual Differences in Learning Programming Languages. Scientific Reports, 2020; 10 (1) DOI: 10.1038/s41598-020-60661-8
 
 https://www.sciencedaily.com/releases/2020/03/200302103735.htm
+
+#### Operating Systems
+
+Technical reasons to choose FreeBSD over GNU/Linux
+
+https://unixsheikh.com/articles/technical-reasons-to-choose-freebsd-over-linux.html
