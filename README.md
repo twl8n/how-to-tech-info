@@ -118,7 +118,20 @@ https://gitpod.io/
 
 See also: Cloud9, AWS LightSail
 
+#### SQL, PostgreSQL, SQLite
+
+SQLite, shell (bash). Quick, fun intro programming demos, working examples. A short intro to SQL using SQLite. This should work fine for all Mac users since SQLite is pre-installed by Apple. Windows users might have to install SQLite.
+
+https://github.com/twl8n/intro_exercises
+
+
+
 #### Clojure
+
+Online Clojure compiler, Online Clojure IDE, and online Clojure REPL. Code Clojure, compile Clojure, run Clojure, and host your programs and apps online for free.
+This is a quick and easy way to type in and run Clojure from a web browser. The "REPL" is "read, evaluate, print, loop": read some code, run it, print the result, and loop through the process until all the code is executed.
+
+https://repl.it/languages/clojure
 
 A Clojure babushka for the grey areas of Bash. Really, a Clojure interpreter as a native application with fast launch times. It is intended as a bash scripting replacement, but really is a (near) full release of Clojure as an interpreter. This also may be the easiest way to start learning Clojure. You only need a text editor and babashka. The normal Clojure tool chain has complexities and pecularities. The tooling around Clojure is (in some ways) harder to learn than the language.
 
