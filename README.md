@@ -137,6 +137,12 @@ A Clojure babushka for the grey areas of Bash. Really, a Clojure interpreter as 
 
 https://github.com/borkdude/babashka
 
+
+Introduction to clojure. Combine examples at this web page with repl.it above. learnxinyminutes.com has loads of other programming languages too.
+
+https://learnxinyminutes.com/docs/clojure/
+
+
 Clojure datomic ions repl remote
 
 https://github.com/markbastian/replion
