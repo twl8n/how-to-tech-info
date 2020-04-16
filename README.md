@@ -1,6 +1,14 @@
 # how-to-tech-info
 How to's and misc science and tech links
 
+#### Databases, SQL
+
+Install a pcre perl compatible regular expression (regexp) library for SQLite
+
+https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query
+
+
+
 #### 3D 
 
 Stud.io lego studio graphics 3D
