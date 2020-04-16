@@ -8,6 +8,10 @@ Install a pcre perl compatible regular expression (regexp) library for SQLite
 https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query
 
 
+Falcon, free, open source, SQL editor, inline data visualization. Supports: RedShift, MySQL, PostgreSQL, IBM DB2, Impala, MS SQL, Oracle, SQLite and others.
+
+https://github.com/plotly/falcon
+
 
 #### 3D 
 
