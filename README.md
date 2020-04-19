@@ -33,6 +33,10 @@ https://www.leocad.org/
 
 #### Culture
 
+"It's Time to Build" failure warnings prepare for the next event including creating systems federal government bailout money to the people and businesses in need
+
+https://a16z.com/2020/04/18/its-time-to-build/
+
 Scientific research should be free for everyone to read. Sci-Hub supports open publication of research, most of which was paid for with our tax dollars. "the first website in the world to provide mass & public access to research papers". Publishers who hide scientific work behind paywalls would seem to favor their own profit over the welfare of the human race.
 
 https://en.wikipedia.org/wiki/Sci-Hub
