@@ -121,6 +121,10 @@ https://gabgoh.github.io/COVID/index.html
 
 #### Text editors, Emacs, vi, vim, Integrated Development Environment (IDE)
 
+Clojure auto-complete not in a repl, Emacs Clojure[Script] minor mode powered by clj-kondo
+
+https://www.reddit.com/r/Clojure/comments/g4jo95/announcing_the_first_release_of_anakondo_emacs/
+
 Emacs for MacOS (aka OSX, Apple, Mac). If you have a Mac, this is the Emacs you want. 
 
 https://emacsformacosx.com/
