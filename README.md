@@ -85,6 +85,10 @@ https://lesspass.com/#/
 
 #### Biology
 
+Rt, a key measure of how fast the virus is growing. Effective Reproduction Number. Decisions should be based on the max error bar, not the centroid of the stat.
+
+https://rt.live/
+
 Ageing reversed RNA induced pluripotent stem cells iPS cells
 
 https://www.sciencedaily.com/releases/2020/03/200324090007.htm
