@@ -69,6 +69,12 @@ open source javascript music player play lists api examples
 
 https://521dimensions.com/open-source/amplitudejs
 
+#### Command line and scripting
+
+A flexible command line tool for instantly deploying user interfaces for simple commands and scripts. Create a GUI for cli scripts on the Mac.
+
+https://github.com/Impedimenta/Suitcase
+
 #### Hardware
 
 open source time of flight lidar
