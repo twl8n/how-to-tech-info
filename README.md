@@ -37,11 +37,20 @@ https://www.leocad.org/
 
 https://a16z.com/2020/04/18/its-time-to-build/
 
-Scientific research should be free for everyone to read. Sci-Hub supports open publication of research, most of which was paid for with our tax dollars. "the first website in the world to provide mass & public access to research papers". Publishers who hide scientific work behind paywalls would seem to favor their own profit over the welfare of the human race.
+Manuscript, paper, article, doi, full versions, access options. Scientific research should be free for everyone to read. Sci-Hub supports open publication of research, most of which was paid for with our tax dollars. "the first website in the world to provide mass & public access to research papers". Publishers who hide scientific work behind paywalls would seem to favor their own profit over the welfare of the human race.
 
 https://en.wikipedia.org/wiki/Sci-Hub
 
 https://duckduckgo.com/?t=ffab&q=sci-hub&ia=web
+
+Dengue vaccine, CYD-TDV, sold under the brand name Dengvaxia.
+https://en.wikipedia.org/wiki/Dengue_vaccine
+
+Antibody-dependent enhancement, seen in Dengue vaccines. You'll need Sci-hub to read the full text. 
+https://doi.org/10.1002%2Frmv.2101
+
+Dengue vaccine: WHO position paper – September 2018 (Error: the link on the WHO page goes to an article about leprosy, not dengue.)
+https://apps.who.int/iris/handle/10665/274316
 
 drugs use society teens idle hands busy excitement iceland  education
 
