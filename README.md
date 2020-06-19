@@ -102,6 +102,15 @@ password manager open source stateless multi platform chrome firefox android git
 
 https://lesspass.com/#/
 
+
+#### Physics
+
+
+High accuracy ice cores show climate, weather, human activity
+
+https://www.sciencemag.org/news/2018/11/why-536-was-worst-year-be-alive
+
+
 #### Biology
 
 Rt, a key measure of how fast the virus is growing. Effective Reproduction Number. Decisions should be based on the max error bar, not the centroid of the stat.
