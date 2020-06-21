@@ -12,6 +12,31 @@ Falcon, free, open source, SQL editor, inline data visualization. Supports: RedS
 
 https://github.com/plotly/falcon
 
+#### Remove software you don't need.
+
+Uninstall Oracle Java and related Java Applet Plugin. 
+
+https://java.com/en/download/help/mac_uninstall_java.xml
+
+```bash
+sudo rm -fr /Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin
+sudo rm -fr /Library/PreferencePanes/JavaControlPanel.prefPane
+sudo rm -fr ~/Library/Application\ Support/Oracle/Java
+```
+
+`ps aux | grep -i java`
+
+/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Resources/Java Updater.app/Contents/MacOS/Java Updater -bgcheck
+
+Reboot after uninstall, and launchctl will remove non-existing programs. Before uninstalling, you can see com.oracle.java.Java-Updater in the launchctl list.
+
+`launchctl list | grep java`
+
+```
+1861    0       com.oracle.java.Java-Updater
+-       0       com.apple.java.InstallOnDemand
+```
+
 
 #### 3D 
 
