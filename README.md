@@ -228,6 +228,13 @@ Learn clojure coding tutorial REPL examples Robert C. Martin (Uncle Bob)
 
 http://blog.cleancoder.com/uncle-bob/2020/04/06/ALittleClojure.html
 
+#### Programming languages
+
+PHP is probably the most horrible, poorly designed, bug ridden piece of crap in existence. I wish that were an exaggeration, but this quote from the excellent post below covers it: "Virtually every feature in PHP is broken somehow. The language, the framework, the ecosystem, are all just bad." Kudos to Evelyn Woods for this timeless analysis.
+
+https://eev.ee/blog/2012/04/09/php-a-fractal-of-bad-design/
+
+
 #### Education Career
 
 First, Musk should do as he says and fix job descriptions and culture to not require degrees. Second, there's a caveat to "smart guys don't need degrees". Really, those smart guys are just lucky. College (or not) wasn't the factor, just luck.
