@@ -1,6 +1,13 @@
 # how-to-tech-info
 How to's and misc science and tech links
 
+#### Security, privacy
+
+Easily (no client, no download) run a headless browser on a remote server:
+
+https://github.com/dosyago/BrowserGap
+
+
 #### Databases, SQL
 
 Install a pcre perl compatible regular expression (regexp) library for SQLite
