@@ -120,6 +120,10 @@ A flexible command line tool for instantly deploying user interfaces for simple 
 
 https://github.com/Impedimenta/Suitcase
 
+ssh text based social network sharing art music twitter bot html art
+
+https://tilde.town/wiki/faq.html
+
 #### Hardware
 
 open source time of flight lidar
