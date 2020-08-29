@@ -8,6 +8,11 @@ Easily (no client, no download) run a headless browser on a remote server:
 https://github.com/dosyago/BrowserGap
 
 
+The Joy of Cryptography is an undergraduate textbook by Mike Rosulek been writing for CS427, his undergraduate course in cryptography.
+
+http://web.engr.oregonstate.edu/~rosulekm/crypto/
+
+
 #### Databases, SQL
 
 Install a pcre perl compatible regular expression (regexp) library for SQLite
