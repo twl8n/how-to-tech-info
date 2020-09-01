@@ -13,6 +13,11 @@ The Joy of Cryptography is an undergraduate textbook by Mike Rosulek been writin
 http://web.engr.oregonstate.edu/~rosulekm/crypto/
 
 
+MacOS security and privacy guide, setup and initial configuration of Mac 
+
+https://github.com/drduh/macOS-Security-and-Privacy-Guide#spotlight-suggestions
+
+
 #### Databases, SQL
 
 Install a pcre perl compatible regular expression (regexp) library for SQLite
