@@ -156,6 +156,10 @@ High accuracy ice cores show climate, weather, human activity
 
 https://www.sciencemag.org/news/2018/11/why-536-was-worst-year-be-alive
 
+Methanol fuel beetle robot platium wire muscle nickel-titanium alloy
+
+https://www.sciencenews.org/article/methanol-fuel-beetle-robot
+
 
 #### Biology
 
