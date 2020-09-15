@@ -203,6 +203,10 @@ https://gabgoh.github.io/COVID/index.html
 
 #### Text editors, Emacs, vi, vim, Integrated Development Environment (IDE)
 
+Enhanced Emacs experience, especially for beginners. May be easier and/or more sane than default Emacs. Note that you will probably also have a better experience with Emacs if you get a .emacs configuration file from a friend.
+
+https://github.com/bbatsov/prelude
+
 Clojure auto-complete not in a repl, Emacs Clojure[Script] minor mode powered by clj-kondo
 
 https://www.reddit.com/r/Clojure/comments/g4jo95/announcing_the_first_release_of_anakondo_emacs/
