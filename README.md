@@ -1,6 +1,13 @@
 # how-to-tech-info
 How to's and misc science and tech links
 
+#### Graphics, video
+
+https://github.com/yuanqing/vdx
+
+An intuitive CLI for processing video, powered by FFmpeg. Crop, trim, resize, reverse, rotate, strip audio, change the speed, change the frame rate, change the volume, convert to a different file format. Run multiple operations on multiple files concurrently.
+
+
 #### Security, privacy
 
 Easily (no client, no download) run a headless browser on a remote server:
