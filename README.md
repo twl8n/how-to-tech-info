@@ -7,6 +7,9 @@ https://github.com/yuanqing/vdx
 
 An intuitive CLI for processing video, powered by FFmpeg. Crop, trim, resize, reverse, rotate, strip audio, change the speed, change the frame rate, change the volume, convert to a different file format. Run multiple operations on multiple files concurrently.
 
+https://github.com/3b1b/manim
+
+math algorigthm explain video animation code python explainer Manim is an animation engine for explanatory math videos. Used to create precise animations programmatically, as seen in the videos at 3Blue1Brown. There is also a community maintained version at https://github.com/ManimCommunity/manim/. 
 
 #### Security, privacy
 
