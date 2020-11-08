@@ -3,6 +3,12 @@ How to's and misc science and tech links
 
 #### Graphics, video
 
+
+https://www.blackmagicdesign.com/products/davinciresolve/
+
+DaVinci Resolve 16 tools for editing, new cut page, visual effects, motion graphics, color correction, audio post production, single application, seems to have a free version, Mac, Window, Linux. Maybe a replacement for iMovie? 
+
+
 https://github.com/yuanqing/vdx
 
 An intuitive CLI for processing video, powered by FFmpeg. Crop, trim, resize, reverse, rotate, strip audio, change the speed, change the frame rate, change the volume, convert to a different file format. Run multiple operations on multiple files concurrently.
