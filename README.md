@@ -36,6 +36,16 @@ https://github.com/drduh/macOS-Security-and-Privacy-Guide#spotlight-suggestions
 
 #### Databases, SQL
 
+PostgREST serves fully RESTful API works with any existing PostgreSQL database. Clever name combines Postgres and REST. API written in Haskell and the WARP http server.
+
+https://github.com/PostgREST/postgrest
+
+
+Haskell WARP http server
+
+https://hackage.haskell.org/package/warp
+
+
 Install a pcre perl compatible regular expression (regexp) library for SQLite
 
 https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query
