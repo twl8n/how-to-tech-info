@@ -152,6 +152,12 @@ https://521dimensions.com/open-source/amplitudejs
 
 #### Command line and scripting
 
+
+Copy and paste across machines using GitLab Snippets as a storage backend. Sort of replaces and expands pbcopy, pbpaste, xclip (some of which do not work on headless linux servers)
+
+https://github.com/bradwood/glsnip
+
+
 A flexible command line tool for instantly deploying user interfaces for simple commands and scripts. Create a GUI for cli scripts on the Mac.
 
 https://github.com/Impedimenta/Suitcase
