@@ -138,6 +138,12 @@ https://github.com/mihaiolteanu/vuiet
 
 #### Coding examples
 
+Minimal safe Bash script template
+
+https://betterdev.blog/minimal-safe-bash-script-template/
+
+https://gist.github.com/m-radzikowski/53e0b39e9a59a1518990e76c2bff8038
+
 Regular Expressions for Regular Folk regex for beginners example based visual test cases
 
 https://refrf.shreyasminocha.me/
