@@ -1,6 +1,12 @@
 # how-to-tech-info
 How to's and misc science and tech links
 
+#### Data, algorithms
+
+https://en.wikipedia.org/wiki/Gerd_Gigerenzer
+
+Heuristics for improved inferences when knowledge is limited. Topics: risk literacy, risk communication,  Daniel Goldstein, recognition heuristic, take-the-best heuristic.
+
 #### Graphics, video
 
 
