@@ -42,6 +42,10 @@ https://github.com/drduh/macOS-Security-and-Privacy-Guide#spotlight-suggestions
 
 #### Databases, SQL
 
+https://github.com/appsmithorg/appsmith
+
+GUI web db app builder sort of for non-devs? From the repo's readme: "Appsmith is a JavaScript-based visual development platform to build and launch internal tools quickly. Drag-and-drop pre-built widgets, and connect them using JavaScript to create interactive pages. Connect UI to your APIs and Databases to build complex workflows in minutes."
+
 PostgREST serves fully RESTful API works with any existing PostgreSQL database. Clever name combines Postgres and REST. API written in Haskell and the WARP http server.
 
 https://github.com/PostgREST/postgrest
