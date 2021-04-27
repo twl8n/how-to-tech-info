@@ -9,6 +9,8 @@ Heuristics for improved inferences when knowledge is limited. Topics: risk liter
 
 #### Graphics, video
 
+Create flow diagrams aka sequence diagrams aka actors and messages. It sort of looks like what message passing object oriented programming was initially designed to be. 
+https://swimlanes.io/
 
 https://www.blackmagicdesign.com/products/davinciresolve/
 
