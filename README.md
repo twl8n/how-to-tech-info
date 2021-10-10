@@ -9,6 +9,13 @@ Heuristics for improved inferences when knowledge is limited. Topics: risk liter
 
 #### Graphics, video
 
+Graphscad is a free nodal editor to create customizable 3D objects for 3D printers
+https://graphscad.blogspot.com/
+
+CAD software in your browser
+https://github.com/itta611/ChokokuCAD/blob/main/README.md
+
+
 Create flow diagrams aka sequence diagrams aka actors and messages. It sort of looks like what message passing object oriented programming was initially designed to be. 
 https://swimlanes.io/
 
