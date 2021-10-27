@@ -199,6 +199,12 @@ https://github.com/iliasam/OpenTOFLidar
 
 #### Content management
 
+Replacing my Octopress blog with 200 lines of Babashka
+
+https://blog.michielborkent.nl/migrating-octopress-to-babashka.html
+
+clojure babashka bb scripting content blog manager markdown
+
 https://github.com/maxvoltar/photo-stream
 
 password manager open source stateless multi platform chrome firefox android github
