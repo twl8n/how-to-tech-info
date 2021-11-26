@@ -297,6 +297,9 @@ https://github.com/twl8n/intro_exercises
 
 #### Clojure
 
+Circular Programming in Clojure. Lambda calculus, interpreters, laziness, monads. Anaylsis of a paper that implements embedded functional languages in Haskell. 
+https://cuddly-octo-palm-tree.com/posts/2021-11-21-circular-clojure/
+
 Online Clojure compiler, Online Clojure IDE, and online Clojure REPL. Code Clojure, compile Clojure, run Clojure, and host your programs and apps online for free.
 This is a quick and easy way to type in and run Clojure from a web browser. The "REPL" is "read, evaluate, print, loop": read some code, run it, print the result, and loop through the process until all the code is executed.
 
