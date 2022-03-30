@@ -51,6 +51,10 @@ https://github.com/drduh/macOS-Security-and-Privacy-Guide#spotlight-suggestions
 
 #### Databases, SQL
 
+https://animatesql.com/
+
+Animate SQL query operations on a simple two table example database. Maybe kind of fun and educational?
+
 https://github.com/appsmithorg/appsmith
 
 GUI web db app builder sort of for non-devs? From the repo's readme: "Appsmith is a JavaScript-based visual development platform to build and launch internal tools quickly. Drag-and-drop pre-built widgets, and connect them using JavaScript to create interactive pages. Connect UI to your APIs and Databases to build complex workflows in minutes."
