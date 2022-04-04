@@ -34,6 +34,10 @@ math algorigthm explain video animation code python explainer Manim is an animat
 
 #### Security, privacy
 
+Checklist of personal security practices. A nice, curated list of things you can do to be more secure online.
+
+https://github.com/Lissy93/personal-security-checklist
+
 Easily (no client, no download) run a headless browser on a remote server:
 
 https://github.com/dosyago/BrowserGap
