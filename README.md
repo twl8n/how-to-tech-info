@@ -1,13 +1,35 @@
 # how-to-tech-info
 How to's and misc science and tech links
 
-#### Data, algorithms
+## Table of Contents
+[Data algorithms](#data-algorithms)
+Graphics video
+Security privacy
+Databases SQL
+Remove software you don't need
+3D
+Culture
+Coding examples
+Command line and scripting
+Hardware
+Content management
+Physics
+Biology
+Text editors Emacs vi vim Integrated Development Environment IDE
+Cloud Integrated Development Environment IDE
+SQL PostgreSQL SQLite
+Clojure
+Programming languages
+Education Career
+Operating Systems
+
+#### Data algorithms
 
 https://en.wikipedia.org/wiki/Gerd_Gigerenzer
 
 Heuristics for improved inferences when knowledge is limited. Topics: risk literacy, risk communication,  Daniel Goldstein, recognition heuristic, take-the-best heuristic.
 
-#### Graphics, video
+#### Graphics video
 
 Graphscad is a free nodal editor to create customizable 3D objects for 3D printers
 https://graphscad.blogspot.com/
@@ -32,7 +54,7 @@ https://github.com/3b1b/manim
 
 math algorigthm explain video animation code python explainer Manim is an animation engine for explanatory math videos. Used to create precise animations programmatically, as seen in the videos at 3Blue1Brown. There is also a community maintained version at https://github.com/ManimCommunity/manim/. 
 
-#### Security, privacy
+#### Security privacy
 
 Checklist of personal security practices. A nice, curated list of things you can do to be more secure online.
 
@@ -53,7 +75,7 @@ MacOS security and privacy guide, setup and initial configuration of Mac
 https://github.com/drduh/macOS-Security-and-Privacy-Guide#spotlight-suggestions
 
 
-#### Databases, SQL
+#### Databases SQL
 
 https://animatesql.com/
 
@@ -82,7 +104,7 @@ Falcon, free, open source, SQL editor, inline data visualization. Supports: RedS
 
 https://github.com/plotly/falcon
 
-#### Remove software you don't need.
+#### Remove software you don't need
 
 Uninstall Oracle Java and related Java Applet Plugin. 
 
@@ -272,7 +294,7 @@ Coronavirus epidemic calculator interactive
 
 https://gabgoh.github.io/COVID/index.html
 
-#### Text editors, Emacs, vi, vim, Integrated Development Environment (IDE)
+#### Text editors Emacs vi vim Integrated Development Environment IDE
 
 Enhanced Emacs experience, especially for beginners. May be easier and/or more sane than default Emacs. Note that you will probably also have a better experience with Emacs if you get a .emacs configuration file from a friend.
 
@@ -286,7 +308,7 @@ Emacs for MacOS (aka OSX, Apple, Mac). If you have a Mac, this is the Emacs you 
 
 https://emacsformacosx.com/
 
-#### Cloud Integrated Development Environment (IDE)
+#### Cloud Integrated Development Environment IDE
 
 Are You Ready-To-Code?Start Instantly. Anywhere. Gitpod launches ready-to-code dev environments
 for your GitHub or GitLab project with a single click.
@@ -295,7 +317,7 @@ https://gitpod.io/
 
 See also: Cloud9, AWS LightSail
 
-#### SQL, PostgreSQL, SQLite
+#### SQL PostgreSQL SQLite
 
 SQLite, shell (bash). Quick, fun intro programming demos, working examples. A short intro to SQL using SQLite. This should work fine for all Mac users since SQLite is pre-installed by Apple. Windows users might have to install SQLite.
 
