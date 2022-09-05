@@ -188,6 +188,12 @@ https://github.com/mihaiolteanu/vuiet
 
 #### Coding examples
 
+Mito: the fastest way to do Python data analytics, simply by editing a spreadsheet. Edit a spreadsheet, generate Python code
+
+https://www.trymito.io/
+
+https://docs.trymito.io/
+
 Minimal safe Bash script template
 
 https://betterdev.blog/minimal-safe-bash-script-template/
@@ -223,6 +229,10 @@ ssh text based social network sharing art music twitter bot html art
 https://tilde.town/wiki/faq.html
 
 #### Hardware
+
+uLisp Raspberry coding example I2C Wireless Message Display
+
+http://forum.ulisp.com/t/wireless-message-display/1062
 
 open source time of flight lidar
 
