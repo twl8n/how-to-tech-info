@@ -3,25 +3,25 @@ How to's and misc science and tech links
 
 ## Table of Contents
 [Data algorithms](#data-algorithms)
-Graphics video
-Security privacy
-Databases SQL
-Remove software you don't need
-3D
-Culture
-Coding examples
-Command line and scripting
-Hardware
-Content management
-Physics
-Biology
-Text editors Emacs vi vim Integrated Development Environment IDE
-Cloud Integrated Development Environment IDE
-SQL PostgreSQL SQLite
-Clojure
-Programming languages
-Education Career
-Operating Systems
+[Graphics video](#graphics-video)
+[Security privacy](#security-privacy)
+[Databases SQL](#databases-sql)
+[Remove software you don't need](#remove-software-you-don't-need)
+[3D](#3d)
+[Culture](#culture)
+[Coding examples](#coding-examples)
+[Command line and scripting](#command-line-and-scripting)
+[Hardware](#hardware)
+[Content management](#content-management)
+[Physics](#physics)
+[Biology](#biology)
+[Text editors Emacs vi vim Integrated Development Environment IDE](#text-editors-emacs-vi-vim-integrated-development-environment-ide)
+[Cloud Integrated Development Environment IDE](#cloud-integrated-development-environment-ide)
+[SQL PostgreSQL SQLite](#sql-postgresql-sqlite)
+[Clojure](#clojure)
+[Programming languages](#programming-languages)
+[Education Career](#education-career)
+[Operating Systems](#operating-systems)
 
 #### Data algorithms
 
