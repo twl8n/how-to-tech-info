@@ -378,8 +378,10 @@ https://eev.ee/blog/2012/04/09/php-a-fractal-of-bad-design/
 
 #### Education Career
 
-First, Musk should do as he says and fix job descriptions and culture to not require degrees. Second, there's a caveat to "smart guys don't need degrees". Really, those smart guys are just lucky. College (or not) wasn't the factor, just luck.
+First, Musk should do as he says and remove degree requirements from job descriptions and workplace culture. Second, there's a caveat to "smart guys don't need degrees". Really, those smart guys are just lucky. College (or not) wasn't the factor, just luck.
+
 https://www.theguardian.com/technology/2020/mar/10/elon-musk-college-for-fun-not-learning
+
 
 Ability to learn a spoken language correlates with programming better than math skills
 
