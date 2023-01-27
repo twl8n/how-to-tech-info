@@ -366,6 +366,10 @@ http://blog.cleancoder.com/uncle-bob/2020/04/06/ALittleClojure.html
 
 #### Programming languages
 
+Stevan Andjelkovic argues that Erlang's inherent use of state machines allows application devs to concentrate on the application behavior. And that due to the nature of state machines, the application is very robust. This has been my experience with state machines, including the critter brains we used in the Island of Kesmai. Those non player characters relied on a state machine technology created by Kelton Flinn. 
+
+https://github.com/stevana/armstrong-distributed-systems/blob/main/docs/erlang-is-not-about.md
+
 Facts about State Machines. A nice, complete, synopsis of the beauty of state machines by Chris Pressey. Very cleverly addresses the concept of the "state" of the system by suggesting the term "mode". My favorite flavor of state machine is derived from what Kelton Flinn created for the Island of Kesmai, where state broadly included any aspect of the system that could be logically tested with an if statement. Calling that a mode seems to fit, and addresses confusion over state as a more narrow definition.
 
 https://github.com/cpressey/Facts-about-State-Machines
