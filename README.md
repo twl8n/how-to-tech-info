@@ -39,11 +39,21 @@ https://blog.rastrian.dev/post/beyond-the-nat-cgnat-bandwidth-and-practical-tunn
 Forward all email:
 https://serverfault.com/questions/328727/forward-incoming-mail-on-linux-server
 
+Probably best to use Postfix as the top answer suggests. Ubuntu has Postfix docs:
+
+https://help.ubuntu.com/community/Postfix
+
+Simplistic overview using sendmail:
+
 - Set up mx records in DNS
 - Install sendmail
 Set up /etc/mail/virtusertable with the following forwarding line:
 
 `emailaddress@mydomain.com   otheremail@gmail.com`
+
+What you actually need to do using sendmail:
+
+https://serverfault.com/questions/912648/set-up-email-accounts-that-just-auto-forward-to-another-address/914930#914930
 
 
 #### Data algorithms
