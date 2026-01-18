@@ -32,9 +32,9 @@ How to's and misc science and tech links
 Scroll halfway down to "Escaping CGNAT with Tunnels":
 https://blog.rastrian.dev/post/beyond-the-nat-cgnat-bandwidth-and-practical-tunneling
 
-[Cloudflare Tunnel]https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/
+[Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/)
 
-[A Boring Announcement: Free Tunnels for Everyone]https://blog.cloudflare.com/tunnel-for-everyone/
+[A Boring Announcement: Free Tunnels for Everyone](https://blog.cloudflare.com/tunnel-for-everyone/)
 
 #### Data algorithms
 
