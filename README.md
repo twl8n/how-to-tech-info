@@ -3,6 +3,7 @@ How to's and misc science and tech links
 
 ## Table of Contents
 
+- [Hosting, Tunneling, Email](#hosting-tunneling)
 - [Data algorithms](#data-algorithms)
 - [Graphics video](#graphics-video)
 - [Security privacy](#security-privacy)
@@ -23,6 +24,12 @@ How to's and misc science and tech links
 - [Programming languages](#programming-languages)
 - [Education Career](#education-career)
 - [Operating Systems](#operating-systems)
+
+#### Hosting Tunneling
+
+Scroll halfway down to "Escaping CGNAT with Tunnels":
+
+https://blog.rastrian.dev/post/beyond-the-nat-cgnat-bandwidth-and-practical-tunneling
 
 #### Data algorithms
 
