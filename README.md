@@ -36,6 +36,16 @@ https://blog.rastrian.dev/post/beyond-the-nat-cgnat-bandwidth-and-practical-tunn
 
 [A Boring Announcement: Free Tunnels for Everyone](https://blog.cloudflare.com/tunnel-for-everyone/)
 
+Forward all email:
+https://serverfault.com/questions/328727/forward-incoming-mail-on-linux-server
+
+- Set up mx records in DNS
+- Install sendmail
+Set up /etc/mail/virtusertable with the following forwarding line:
+
+`emailaddress@mydomain.com   otheremail@gmail.com`
+
+
 #### Data algorithms
 
 https://en.wikipedia.org/wiki/Gerd_Gigerenzer
