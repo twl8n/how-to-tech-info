@@ -27,7 +27,7 @@ How to's and misc science and tech links
 
 #### Hosting Tunneling
 
-[How to setup AWS Lightsail server, and build your own website]https://medium.com/@yuhaocooper/how-to-setup-aws-lightsail-server-and-build-your-own-website-e274721ed1bc
+[How to setup AWS Lightsail server, and build your own website](https://medium.com/@yuhaocooper/how-to-setup-aws-lightsail-server-and-build-your-own-website-e274721ed1bc)
 
 Scroll halfway down to "Escaping CGNAT with Tunnels":
 https://blog.rastrian.dev/post/beyond-the-nat-cgnat-bandwidth-and-practical-tunneling
