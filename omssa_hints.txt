@@ -1,0 +1,136 @@
+date: Feb 28  2007
+title:OMSSA Hints and Howto
+keywords:omssa,ms,search,peptide,how,to,documentation,
+description:How to choose and determine options for OMSSA and omssacl
+
+Table of contents
+-----------------
+Introduction
+How to convert average mass to OMSSA mods
+Choosing values for "te", "to", "tez", "mm", etc.
+Other factors that may effect mass tolerance
+Fixed and variable modifications
+
+
+
+Introduction
+------------
+
+Choosing the best values for OMSSA options can be a challenge. With
+the help of several people from various institutions, I've put
+together some notes. Many, many thanks to all who contributed.
+
+
+
+
+How to convert average mass to OMSSA mods
+-----------------------------------------
+
+The problem: your MS/MS lab gives you a data set and says "We did this
+run with a static modification on Cys of 57.0215." This translates to
+an average mass of Cysteine of 57.0215. You can enter this mass value
+into a couple of web sites and determine the likely mod is
+Carbamidomethyl C. This you can look up in the OMSSA mods list.
+
+average mass >= 57.0215
+
+http://www.unimod.org/modifications_list.php
+
+(Registration not necessary. Click "login as guest".)
+
+
+http://www.abrf.org/index.cfm/dm.home?AvgMass=all
+
+It provides all average masses, and some monoisotopic masses when you
+click on the highlighted modifications.
+
+
+
+
+Choosing values for "te", "to", "tez", "mm", etc.
+-------------------------------------------------
+
+Many of the parameters are chosen based on the instrument and data
+type, although there don't seem to be hard and fast rules.  For
+instance, a no-enzyme search which contains many potential
+modifications and sites requires a larger "mm" setting than a tryptic
+search with a limited number of possible mods.  
+
+The mass tolerances change based on the type of instrument.  Some labs
+have spent a lot of time coming up with sets of parameters, and have
+multiple sets depending upon data type.
+
+A precursor mass tolerance "te" of 0.75 (this is +/-) is very high (a
+wide range) when searching high resolution ms data. I've talked to
+labs that normally stay between the values of 0.01 and 0.06 for this
+parameter.  On the other hand, a value of 0.75 is very low when are
+searching low resolution data.  For low resolution ms data, a typical
+value is in the range of 1.0 to 1.5.  Another recommendation is to set
+the "tez" parameter to 0 (zero). This disables the charge-dependent
+changes to the precursor mass tolerance value.  I found (by trial and
+error) that a product mass tolerance "to" of 0.15 worked for a set of
+spectra (where "worked" means 0.15 yielded more peptides than other
+values for this setting). However, I'm told that this product mass
+tolerance could be too narrow. A typical value is somewhere in the
+range 0.30 to 0.50. I'm not clear why setting the value of "to" to a larger
+number (seemingly more relaxed) gives fewer peptides.
+
+An experienced person has told me that a bigger precursor mass
+tolerance "te" might give more significant hits since more potential
+matches will be available. The concern would be that some of these
+hits were false positives. Oddly, my personal experience is that
+values outside some optimal range yield fewer hits.
+
+
+
+Other factors that may effect mass tolerance
+--------------------------------------------
+
+A friend tells me that -te and -to are very much dependent on which
+mass spectrometer you use.  I don't mean to cast aspersions on the
+MS/MS scientists, but other important factors in mass tolerance relate
+to the MS/MS calibration:
+
+1) How well the MS/MS was calibrated
+
+2) How long ago the MS/MS was calibrated
+
+3) How much the temperature in the room has changed since the MS/ME was calibrated
+
+4) Other unspecified factors
+
+This is one area of possible improvement for the current generation of
+search tools. These tools could sample the spectra, and from that
+sample determine settings, especially mass accuracy. This would be a
+good idea because the mass accuracy values can be highly variable. In
+the near term, I may implement a crude work around by implementing an
+automated software pipeline that runs a search (such as OMSSA) many
+times with a range of settings. The intent is to find the "best"
+settings. Here are some rough suggestions for well-calibrated
+instruments:
+
+Ion trap -to 3.0 -te 0.4
+
+Linear ion trap -to 1.5 -te 1.0
+
+Q-TOF -to 0.2 -te 0.2
+
+
+
+Fixed and variable modifications
+--------------------------------
+
+Fixed modifications are better than variable modifications when
+possible because it limits the range of possible matches to be
+searched. In other words, the search will be faster and there may be
+fewer incorrect matches (bad hits, false positives). The speed
+difference can be significant. The computational overhead is less of
+an issue for many of my searches because I have the luxury of a
+cluster with 30 dual-cpu nodes and I have a high-throughput pipeline
+that will automataically split, run in parallel, and join results
+(this pipeline is open source, by the way). I have not done a direct
+comparison with the same modification fixed versus variable to confirm
+that search results are the same.
+
+
+

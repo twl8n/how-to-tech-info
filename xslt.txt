@@ -1,0 +1,30 @@
+date: Jan 31  2013
+title:XSLT Hints and examples
+description:Sample XSLT scripts
+keywords:xsl,xslt,xml,template,how,to,howto,mini
+
+
+
+This is an example xslt script that turns the mass spec peptide
+hits in an NCBI Omssa run into CSV text. Adding column headers
+and using tabs instead of commas should be trivial. 
+
+Note the xmlns:ncbi namespace declaration. This is necessary to match
+the namespace declared in the MSResponse element in the data file.
+
+
+    <?xml version="1.0"?>
+    <xsl:stylesheet version = "1.0"
+    xmlns:xsl = "http://www.w3.org/1999/XSL/Transform"
+    xmlns:ncbi="http://www.ncbi.nlm.nih.gov">
+    
+    <xsl:output method="text"/>
+      <xsl:template match="/">
+        <xsl:for-each select="//ncbi:MSPepHit">
+    
+          <xsl:value-of select="ncbi:MSPepHit_gi"/>,<xsl:value-of select="ncbi:MSPepHit_accession"/>,<xsl:value-of select="ncbi:MSPepHit_defline"/>
+          <xsl:text>&#x0A;</xsl:text>
+    
+        </xsl:for-each>
+      </xsl:template>
+    </xsl:stylesheet>

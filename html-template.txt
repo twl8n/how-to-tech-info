@@ -1,0 +1,122 @@
+date: Jan 31  2013
+title:HTML::Template notes and hints
+description:Examples of Perl and HTML for using the HTML::Template Perl module
+keywords:template,html,how,to,howto,mini
+
+Some of these examples use code snippets copied directly from other
+authors. Many thanks to those authors. I've extended their work here
+to fill in questions they did not address, and which I found confusing
+at the time.
+
+You may have to install HTML::Template since it is often not part of the core distribution. If you are running
+a SQL example, you may need some extra modules.
+
+Linux
+-----
+
+    sudo yum -y install perl-HTML-Template 
+    sudo yum -y install perl-DBD-SQLite
+
+Macintosh OSX MacOS
+-------------------
+
+Macintosh OSX aka MacOS lacks a package manager (such as yum or apt). Fortunately, Perl has its own package
+management, so it is easy to install modules from CPAN (Comprehensive Perl Archive Network). Be aware: the
+"cpan" command line may install a different (newer) version into /opt/local/bin/perl. The perl -MCPAN command
+works with the standard Perl distribution in /System/Library/Perl (and so on). 
+
+You might have to "sudo rm -fr .cpan" to clear out the cache. The cache directory ".cpan" may be owned by root.
+
+    cd ~/
+    sudo rm -fr .cpan
+
+    sudo PERL_MM_USE_DEFAULT=1 perl -MCPAN -e 'install HTML::Template'
+    sudo PERL_MM_USE_DEFAULT=1 perl -MCPAN -e 'install HTML::FillInForm'
+
+When prompted for "password:" enter your password. I suspect you must be an administrator in order to use the
+"sudo" command.
+
+YAML seems to be optional. However, if you try to install it, you might get this message:
+
+    Can't locate object method "install" via package "YAML" at -e line 1.
+
+The solution is to prepend + to YAML since Perl incorrectly parses the command.
+
+    sudo PERL_MM_USE_DEFAULT=1 perl -MCPAN -e 'install +YAML'
+
+
+
+Basic tags
+----------
+
+
+HTML::Template is pretty simple.  There are three basic tags:
+
+----------- Variables -------------
+<!-- TMPL_VAR NAME=FOO -->  : Simple variable substitution.
+Ex (html).
+	<p>Hello and welcome to my site <b><!-- TMPL_VAR NAME=USER
+--></b>!</p>
+Ex (perl).
+	my %tmpl_hash;
+	$tmpl_hash{ 'USER' } = 'Timmy';
+	$template->param( \%tmpl_hash );
+
+
+----------- If-then-elses -------------
+<!-- TMPL_IF NAME=BAR --><!-- TMPL_ELSE --><!-- /TMPL_IF --> : Governs
+what will and will not appear on a page.
+Ex. (html):
+	<p>
+    	   There will
+	   <!-- TMPL_IF NAME=IS_RAGNAROK -->not<!-- /TMPL_IF -->
+	   be a tomorrow.
+        </p>
+Ex. (perl):
+	%tmpl_hash;
+	$tmpl_hash{ 'IS_RAGANROK' } = 1;
+	$template->param( \%tmpl_hash );
+N.B.  If the TMPL_IF variable is not set, it is assumed to be false.
+Also, there is no ELSE_IF, so you may have to nest TMPL_IF tags.
+
+----------- Loops -------------
+<!-- TMPL_LOOP NAME=BAZ --><!-- /TMPL_LOOP --> : Used for repeating data
+Ex. (html)
+	<p>I am afraid of: <br>
+	 <!-- TMPL_LOOP NAME=PHOBIAS -->
+	   <!-- TMPL_VAR NAME=FEAR --><br>
+	 <!-- /TMPL_LOOP -->
+	</p>
+Ex. (perl)
+	my %tmpl_hash;
+	my @phobias;
+	my %phobia_hash_1;
+	$phobia_hash_1{ 'FEAR' } = 'pirates';
+	push(@phobias, \%phobia_hash_1);
+	my %phobia_hash_2;
+	$phobia_hash_2{ 'FEAR' } = 'jellybeans';
+	push(@phobias, \%phobia_hash_2);
+	$tmpl_hash{ 'PHOBIAS' } = \@phobias;
+	$template->param( \%tmpl_hash );
+
+
+TMPL_IFs can go in TMPL_LOOPs, and vice-versa.  TMPL_LOOPs can go inside
+other TMPL_LOOPs.  TMPL_IFs can go inside other TMPL IFs. TMPL_VARs can go
+wherever they damn well please.
+
+It's not hard.  It's just a hash-o-rama in the perl.
+
+
+#!/usr/bin/perl -w
+use HTML::Template;
+
+# open the html template
+my $template = HTML::Template->new(filename => 'test.tmpl');
+
+# fill in some parameters
+$template->param(HOME => $ENV{HOME});
+$template->param(PATH => $ENV{PATH});
+
+# send the obligatory Content-Type and print the template output
+print "Content-Type: text/html\n\n", $template->output;
+

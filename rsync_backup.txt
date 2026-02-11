@@ -1,0 +1,184 @@
+date: Jan 22  2007
+title:Rsync explanation and recommendations
+keywords:rsync,backup,mirror,delete,ssh,public,key,example,how,to,how-to,howto
+description:An explanation of how rsync manages directories, and recommended usages with examples.
+
+Table of contents
+-----------------
+Introduction
+Suggested use
+Example 2a
+Example 2b
+Important note
+A longer example
+A note about delete
+
+
+
+
+Introduction
+------------
+
+After reading this document you should be able to use rsync to create
+a mirror or backup of your home directory. 
+
+"source" is the origin file system.  "destination" is the destination
+computer and/or file system, i.e. the backup copy. In the examples
+below carefully watch for the presence or absence of the trailing
+slash.
+
+The trailing slash present: /home/mst3k/
+
+The trailing slash absent: /home/mst3k
+
+
+Rsync has two major modes of operation. The modes are dependent on the
+absence or presence of the trailing slash on the source
+directory. Remember: source directory. Trailing slash on the
+destination directory doesn't matter.
+
+
+
+
+Suggested use
+-------------
+
+1) Copy the source directory to the destination (this is the
+recommended mode; see note below). Using the command below,
+/home/mst3k is resursively copied to the /backup/mst3k.
+
+This is recommended because when a top level directory is deleted from
+the source, that directory can is automatically deleted (if you
+desire) from the destination. When using methods "1" or "2a", and
+--delete, top level directories are deleted from the destination. With
+"2b", only directories below top level will be deleted with --delete.
+
+rsync -a --delete /home/mst3k /backup/
+
+Source:
+/home/mst3k/file_a.txt
+/home/mst3k/dir
+/home/mst3k/dir/file_b.txt
+
+Destination:
+/backup/mst3k/file_a.txt
+/backup/mst3k/dir
+/backup/mst3k/dir/file_b.txt
+
+
+
+
+Example 1
+---------
+
+Here is a second example of method "1", with an additional destination
+subdirectory. This example exists to confirm your understanding of
+method "1".
+
+rsync -a --delete /home/mst3k /backup/mst3k_copy/mst3k
+
+Source:
+/home/mst3k/file_a.txt
+/home/mst3k/dir
+/home/mst3k/dir/file_b.txt
+
+Destination:
+/backup/mst3k_copy/mst3k/file_a.txt
+/backup/mst3k_copy/mst3k/dir
+/backup/mst3k_copy/mst3k/dir/file_b.txt
+
+
+
+
+Example 2a
+----------
+
+2a) Copy the contents of the source directory into the
+destination. Note that there is a trailing slash on the source, and
+the destination is identical to option 1 above.
+ 
+rsync -a --delete /home/mst3k/ /backup/
+
+Source:
+/home/mst3k/file_a.txt
+/home/mst3k/dir
+/home/mst3k/dir/file_b.txt
+
+Destination:
+/backup/file_a.txt
+/backup/dir
+/backup/dir/file_b.txt
+
+
+
+
+Example 2b
+----------
+
+2b) Copy source to a more specific destination subdirectory. Once again there is a
+trailing slash on the source, and the destination subdirectory is the
+same name as the source subdirectory.
+
+rsync -a --delete /home/mst3k/ /backup/mst3k/
+
+Source:
+/home/mst3k/file_a.txt
+/home/mst3k/dir
+/home/mst3k/dir/file_b.txt
+
+Destination:
+/backup/mst3k/file_a.txt
+/backup/mst3k/dir
+/backup/mst3k/dir/file_b.txt
+
+
+
+
+Important note
+--------------
+
+Method "2b" is NOT identical to method 1a. Using method 1a, when
+subdirectory "dir" is deleted from the source, it will also be deleted
+from the destination. This is typically the behavior expected from
+mirrors and backups, therefore I'm recommending method "1".
+
+However, with method "2b", directories that are deleted from the source
+will NOT be deleted from the destination. You'll have to manually
+delete top level subdirectories in the destination.
+
+
+
+
+
+A longer example
+----------------
+
+The following command does a backup from one computer to another
+via ssh. For this to work unattended (e.g. not entering mst3k's
+password on hercules, it is necessary to copy mst3k's public key from
+athena to hercules. See the SSH documents for instructions.)
+
+Source computer: athena.edu
+Source directory: /home/mst3k
+
+Destination computer: hercules.edu
+Destination directory: /home/mst3k/athena.backup/mst3k
+
+You must create the destination directory /home/mst3k/athena.backup
+and rsync will create the final "mst3k" subdirectory. The directory
+you create and the subdirectory rsync creates results in the full,
+final directory /home/mst3k/athena.backup/mst3k
+
+/usr/bin/rsync -avz --delete -e ssh /home/mst3k mst3k\@hercules.edu:/home/mst3k/athena.backup
+
+
+
+
+A note about delete
+-------------------
+
+If you rsync a directory tree as above, there is a case where --delete
+won't help (and this won't surprise you). If you clean out a directory
+( for example ./my_big_dir/) on the source, and then
+--exclude="my_big_dir/" the destination directory will not be changed.
+

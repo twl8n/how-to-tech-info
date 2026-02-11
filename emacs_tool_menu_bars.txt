@@ -1,0 +1,70 @@
+date: Dec 22  2006
+title:Emacs toggle hide show menu and tool bars
+keywords:emacs,tool,menu,file,edit,options,document,paper,folder,help,task,quick,navigation
+description:How to hide or show Emacs menus and toolbars.
+
+This document tells how to hide the tool and menu bars in
+Emacs. Normally the only reason to do this is to gain a little extra
+screen real estate. Personally, I only use the keyboard commands. I
+simply never have need of any items in the tool or menu bar that
+aren't bound to keys I use everyday. On a smaller monitor, the extra 3
+or 4 lines of space is nice.
+
+Emacs may be wonderful and has built-in apropos search for extensive
+help but what about when you don't know the name of a thing? Synonyms
+haven't made it into help files. (We can put a man on the Moon and a
+rover on Mars, but we can't use synonyms in help files?)
+
+
+Just a note to the Emacs documentation writers: I took me half an hour
+to track down the name of the tool bar, i.e. the function
+tool-bar-mode. A picture or even something on the tool bar that says
+what it is when you mouse-over. The buttons have tool-tips. The tool
+bar could use a tool tip. 
+
+
+The menu bar is the top menu in both graphical and non-windowing
+(non-graphical) Emacs. Thankfully, this has a common name and is
+called a menu bar in Windows, Macintosh, and X Windows. The menu bar
+has these entries: File, Edit, Options, ;; Buffers, Tools, Emacs-Lisp,
+Help
+
+I will use the typical command and key conventions for writing the
+commands. This convention is described in detail in:
+
+http://defindit.com/readme_files/starting_linux.html
+
+http://defindit.com/readme_files/emacs_bindings.html
+
+
+You can toggle (switch between on or off) with this command
+M-x menu-bar-mode
+
+
+Add the lines below to your .emacs file to disable the menu bar.
+
+;; arg >= 1 enable the menu bar. Menu bar is the File, Edit, Options,
+;; Buffers, Tools, Emacs-Lisp, Help
+(menu-bar-mode 0)
+
+
+
+
+The tool bar is the extra bar you see below the menu bar when running
+a graphical version of Emacs. The tool bar has icons on it. I would
+not have called these "tools" since that word generally seems to mean
+something like a pencil or paintbrush. Whatever. Synonyms might be
+task, quick reference, shortcut, icon, button, gui. 
+
+Toggle the tool bar:
+M-x tool-bar-mode
+
+
+Add the following lines to  your .emacs file to disable the tool bar.
+
+
+;; With numeric ARG, display the tool bar if and only if ARG is
+;; positive.  Tool bar has icons document (read file), folder (read
+;; directory), X (discard buffer), disk (save), disk+pen (save-as),
+;; back arrow (undo), scissors (cut), etc.
+(tool-bar-mode 0)

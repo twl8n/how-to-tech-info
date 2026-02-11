@@ -1,0 +1,143 @@
+date: Sep 26  2008
+keywords:tripwire,ids,prelink,rpm
+description:Cron daily runs prelink which modifies executables to make them load faster. This changes the file sizes and tripwire returns a warning.
+title:prelink and tripwire
+
+Table of contents
+-----------------
+Prelink and tripwire
+Install transcript from Crossover Office
+
+
+Cron uses the script /etc/cron.daily/prelink to run prelink. Prelink
+is a utility that slightly modifies ELF executables which use shared
+libraries. Somehow the executable is modified to make the load
+(launch) faster. There seems to be some debate about how much faster
+programs launch. There are a couple of side effects. 
+
+If you are running tripwire or another Intruder Detection System (IDS)
+then you will discover that your executables have changed. This often
+causes some concern until it can be shown that the changes were made
+by prelink. (See the prelink md5 command below.)
+
+Second, there may some increase in the security of the applications
+after prelink has been run. This improvement would relate to how
+memory is managed and how hackers attack applications. 
+
+See:
+http://en.wikipedia.org/wiki/Prelinking
+
+In a typical scenario, I installed tripwire via yum. My system has
+been up for a while, and is stable. The next day tripwire reports that
+3 of the tripwire executables have changed! That's odd. Nothing else
+changed. Luckily a coworker google'd the problem. Prelink is the
+culprit. In the transcripts below assume that my host name is
+zeus.example.com, and that I'm logged in as root.
+
+Look up the correct MD5 checksum from your linux distro's web site. In
+my case, this is Fedora:
+
+http://koji.fedoraproject.org/koji/fileinfo?rpmID=187594&filename=/usr/sbin/siggen
+http://koji.fedoraproject.org/koji/fileinfo?rpmID=187594&filename=/usr/sbin/tripwire
+
+Below is a transcript. 
+
+[root@zeus ~]# md5sum /usr/sbin/siggen
+1c3c7a3132febe2c95a9216a8a7f76a0  /usr/sbin/siggen
+[root@zeus ~]# openssl dgst -md5 /usr/sbin/siggen
+MD5(/usr/sbin/siggen)= 1c3c7a3132febe2c95a9216a8a7f76a0
+[root@zeus ~]# prelink -y --md5 /usr/sbin/siggen
+713f04d164537d617688ead2f8e153f5  /usr/sbin/siggen
+[root@zeus ~]#
+
+Simply running md5sum clearly shows a change. Happily prelink has an
+md5 sum mode where it will tell the md5 checksum on the original
+file. The prelink -y --md5 checksum matches the checksum from the
+fedoraproject.org package info page.
+
+After some research, I decided to disable prelink. I did not change
+the prelink config file. My understanding (reading between the lines)
+is that changing the conf file causes prelink to reverse (revert)
+previous prelinking. That would cause tripwire to issue a warning
+about every executable! 
+
+Instead I simple moved /etc/cron.daily/prelink to a directory with
+other disabled cron shell scripts. My system will stay in the current
+state (prelinked). 
+
+The remaining thing is to tell tripwire that the current state is
+ok. This means update the tripwire database.
+
+Below is a transcript. You must include "-Z low". I can't remember why
+I used the "-a" switch. It means "accept all". I had to explicitly
+name my tripwire database and my tripwire daily report. 
+
+In a moment of geeky weakness, I used a backticked expression to get
+the most recent report file.
+-a = all
+-t=sort by timestamp
+-c1 = one column
+head -1 = only show the first line
+
+`ls -atc1 /var/lib/tripwire/report/*.twr | head -1`
+
+You can
+
+"ls -alt /var/lib/tripwire/report/*.twr"
+
+and copy/paste the file name.
+
+[root@zeus ~]# tripwire --update -Z low -a -d /var/lib/tripwire/zeus.example.com.twd -r `ls -atc1 /var/lib/tripwire/report/*.twr | head -1`
+Please enter your local passphrase:
+Wrote database file: /var/lib/tripwire/zeus.example.com.twd
+[root@zeus ~]#
+
+
+
+
+Install transcript from Crossover Office
+----------------------------------------
+
+This is interesting because cxoffice needs prelinking disabled. The
+transcript:
+
+
+RUNNING SU - ROOT -C "/OPT/CXOFFICE/BIN/CXEXECSHIELD --DISABLE"
+PASSWORD: 
+------------------------------------------------------------
+# SET THIS TO NO TO DISABLE PRELINKING ALTOGETHER
+# (IF YOU CHANGE THIS FROM YES TO NO PRELINK -UA
+# WILL BE RUN NEXT NIGHT TO UNDO PRELINKING)
+PRELINKING=YES
+
+# OPTIONS TO PASS TO PRELINK
+# -M    TRY TO CONSERVE VIRTUAL MEMORY BY ALLOWING OVERLAPPING
+#       ASSIGNED VIRTUAL MEMORY SLOTS FOR LIBRARIES WHICH
+#       NEVER APPEAR TOGETHER IN ONE BINARY
+# -R    RANDOMIZE VIRTUAL MEMORY SLOT ASSIGNMENTS FOR LIBRARIES.
+#       THIS MAKES IT SLIGHTLY HARDER FOR VARIOUS BUFFER OVERFLOW
+#       ATTACKS, SINCE LIBRARY ADDRESSES WILL BE DIFFERENT ON EACH
+#       HOST USING -R.
+PRELINK_OPTS="-MR --NO-EXEC-SHIELD"
+
+# HOW OFTEN SHOULD FULL PRELINK BE RUN (IN DAYS)
+# NORMALLY, PRELINK WILL BE RUN IN QUICK MODE, EVERY
+# $PRELINK_FULL_TIME_INTERVAL DAYS IT WILL BE RUN
+# IN NORMAL MODE.  COMMENT IT OUT IF IT SHOULD BE RUN
+# IN NORMAL MODE ALWAYS.
+PRELINK_FULL_TIME_INTERVAL=14
+------------------------------------------------------------
+
+THE TEXT ABOVE WILL BE WRITTEN TO '/ETC/SYSCONFIG/PRELINK'
+
+'/USR/SBIN/PRELINK' WILL BE RUN, AND MAY TAKE 5 OR 10 MINUTES TO COMPLETE.
+
+The script '/etc/rc.d/init.d/cxoffice' will be installed to disable exec-shield at boot time
+
+Do you want to make the above modifications? [y/N] y 
+
+CrossOver is now disabling Exec Shield.  This could take a really long
+time, so you might want to go get yourself a cup of coffee.
+
+Don't worry if a few error messages appear -- these won't affect the task at hand.
+prelink: no process killed

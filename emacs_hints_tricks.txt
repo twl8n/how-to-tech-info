@@ -1,0 +1,325 @@
+date: Jul 30  2011
+title:Emacs hints, GPG, pgg-decrypt, include lines, paste, unfill
+description:Emacs GPG, pgg-encrypt, ansi-term, cursor logical move, paste at cursor, unfill paragraph
+keywords:encrypt, decrypt, symmetric, GPG, line wrap, line, move, visual, wrapping, continuation, visual, logical, cursor,cursor jump, cursor skip, skip line, skip continuation, wrapped lines,continuation lines, line continuation, line continuation mode, cursormovement mode, cursor mode, next line, next logical line, skip tological line, cursor move, line visual move, line-move-visual, movelogical, logical lines
+
+
+Table of contents
+-----------------
+GPG and pgg on Macintosh MacOS OSX
+Miscellaneous hints
+Multiterm notes
+Logical lines with line-move-visual
+Paste at cursor with mouse-yank-at-point
+Unfill paragraph
+
+
+GPG and pgg on Macintosh MacOS OSX
+----------------------------------
+
+GPG is the GnuPG open source implementation of PGP (Pretty Good
+Privacy). PGP and GPG is very good privacy, so the name is somewhat
+modest and whymsical. When this document was written, there were no
+known ways to break GPG or PGP. (That said, I suspect that the simple
+symmetric encryption described below may be less strong than the
+key-based encryption.)
+
+http://en.wikipedia.org/wiki/Pretty_Good_Privacy
+
+You'll need Emacs and a verion of GPG (or the commercial PGP, I
+guess). These instructions only partly apply to Linux systems. I
+suspect that GPG is standar on all Linux systems. In any case, on
+Linux you should use your package installer to install Emacs and (if
+necesssary) GPG. (Package installers are yum, apt, or desktop GUI
+applications with names like "Installed Software", "KPackage Manager"
+or something.)
+
+Install Aquamacs:
+
+http://aquamacs.org/
+
+(Based on very minimal testing, these instructions also work with the
+"normal", non-Aqua, Emacs on the Mac.)
+
+Get the GPG Tools from:
+
+http://www.gpgtools.org/installer/index.html
+
+Download, open the .dmg, open the package installer (and icon like a
+box), click "continue" or whatever as usual with installers. Exit the
+installer, eject the .dmg.
+
+Add the following lines to your .emacs file. Feel free to delete the
+ranting parts of the comments. 
+
+;; The daffy Mac and Aquamacs don't read .bash_profile and .bashrc
+;; like the rest of the planet. You could go down the rabbit hole
+;; http://developer.apple.com/library/mac/#qa/qa1067/_index.html
+;; Instead, just get Emacs to add stuff to your path. The Mac GPG
+;; tools are in /usr/local/bin.
+
+;; http://lists.gnu.org/archive/html/help-gnu-emacs/2011-04/msg00210.html
+
+(setenv "PATH" (concat "/usr/local/bin" path-separator (getenv "PATH")))
+
+;; http://www.andreas-wilm.com/src/dot.emacs.html
+;; This would work too, but has the path separator hard coded.
+;; (setenv "PATH" (concat (getenv "PATH") ":/opt/local/bin"))
+
+;; Andreas says: delete next line and you get: *ERROR*: Searching for
+;; program: No such file or directory, GPG. 
+
+;; You must open a shell and determine the correct path to GPG
+;; manually, then put that path in the line below.
+
+(setq exec-path (append exec-path '("/usr/local/bin")))
+
+Restart emacs (or M-x load-file .emacs). If you are using Mac OSX
+Terminal, M-x is Esc-x or C-[ x (C-[ is control-[). 
+
+Now you should be able to open a file and encrypt it via
+pgg-encrypt-symmetric, (run the pgg commands via M-x) and then decrypt
+via pgg-decrypt. I like these two functions for light weight encryption
+for two reasons:
+
+1) they are easy
+
+2) they don't require that you keep your GPG keys with the file.
+
+"Symmetric" means that the encryption and decryption only require a
+passphrase. Normally GPG encryption uses your GPG keys which are saved
+in a .gpg directory. If you lose those keys, there is *no way* to
+decrypt files that were encrypted with those keys. This is why people
+often some kind of key infrastructure, in order to avoid losing keys.
+
+
+Miscellaneous hints
+-------------------
+
+You may have noticed that even though your .emacs custom-faces
+specifies a white background, when running emacs -nw in an xterm, the
+background color is gray or sort of blue-ish gray. Apparently, xterm
+thinks it knows better and uses one of its internal settins for
+background. This is counter intuitive since the original xterm window
+had a white background.
+
+See:
+
+http://stackoverflow.com/questions/3027084/how-do-i-change-the-color-settings-in-emacs23-running-in-a-terminal-emulator
+
+The fix is to call emacs with a -bg command line parameter.
+
+emacs -nw tmp.txt -bg nil
+
+
+
+The del key behaves badly in Emacs and in readline apps on Centos.
+
+(keyboard-translate ?\C-h ?\C-?)
+
+Another approach is to switch key bindings and put help on C-x h
+instead, by putting the following lines in your .emacs file:
+
+(global-set-key [?\C-h] 'delete-backward-char)
+(global-set-key [?\C-x ?h] 'help-command) ;; overrides mark-whole-buffer
+
+
+Make the default font larger for emacs on tull running in X. Was
+":height 140" or 150, changed to 180. Seems necessary to restart emacs
+after a change. Simply doing load-file on .emacs doesn't work.
+
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 180 :width normal :foundry "urw" :family "Nimbus Mono L")))))
+
+
+
+Multiterm notes
+---------------
+
+# ansi-term aka term.el number of lines to keep
+
+(setq term-buffer-maximum-size 2048)
+
+# ansi-term tricks
+
+C-c M-x is same as M-x normally.
+
+Using the terminal is far more sensible if you know how to switch
+between the two terminal modes. The standard mode that works (more or
+less) the way a terminal works is where C-p and C-n (previous and
+next) work on the shell history. This is the default and is enabled by
+the function term-char-mode.
+
+In the other mode, Emacs treats the terminal output like a text buffer
+instead of working on the shell history. This is enabled by
+term-line-mode.
+
+# Switch ansi-term into line mode where your cursor moves on the
+# screen instead of in the shell history "term-line-mode":
+
+C-c C-j
+
+# Switch ansi-term back to the default char mode where your cursor
+# moves in the shell history "term-char-mode":
+
+C-c C-k 
+
+I'm thinking of changing ansi-term, especially char mode to have
+almost no Emacs key bindings. Everything would be passed to the
+terminal which should enable Emacs to run in the terminal in -nw
+mode. I find -nw handy when I'm logging in to certain remote
+servers. Normally, runing emacs -nw in ansi-term is really, really
+irritating because the keystrokes are soaked up by the hosting Emacs,
+even though there is little point in that. This "send everything to
+the terminal" is workable as long as a key sequence is reserved for
+escaping. That sequence would be C-c M-x. This is just an idea that I
+haven't yet explored. Also, as of Apr 2011, ansi-term has a bug where
+underlines (as in man pages) sticks and makes a mess of the
+screen. The workaround for the under lines is to view another man page
+without underlines.
+
+
+http://www.emacswiki.org/emacs/MultiTerm
+http://www.emacswiki.org/emacs/download/multi-term.el
+
+Using tramp mode in emacs:
+
+C-x C-f /remotehost:filename  RET (or /method:user@remotehost:filename)
+
+With ido running use c-x c-f c-f 
+
+If you are running ansi-term or most of the other Emacs
+shells/terminals, you may have to copy terminfo from some location to
+your local home directory. I don't know if this really helped. I did a
+"localte eterm-color" to find these files:
+
+    ~/.terminfo/e/eterm-color
+    ~/.terminfo/e/eterm-color.ti
+
+Need more stuff in .bashrc since some systems either don't use
+terminfo, or can't understand the eterm settings. Using vt100 seems to
+work just fine.
+
+    # We need this for eterm-color, but might as well set it for everyone.
+    stty erase ^\?
+
+    if [ $TERM == 'eterm-color' ]
+    then export TERM=vt100
+    fi
+
+May need to open a file as /host: to get tramp working the first time,
+or reset tramp if it gets upset. I've had tramp simply fail to talk to
+a server. I closed Emacs and maybe some xterm sessions, and restarted
+things and it was working.
+
+
+Loading tramp...
+error in process filter: shell-command-to-string: Setting current directory: No such file or directory, /home/twl8n/
+error in process filter: Setting current directory: No such file or directory, /home/twl8n/
+
+# tramp and remove edit tricks
+
+http://stackoverflow.com/questions/846608/how-to-do-remote-development-with-emacs
+
+# from ansi-term and other emacs shells:
+cd /ssh:me@remote-server.com:
+
+
+
+
+Logical lines with line-move-visual
+-----------------------------------
+
+A line that wraps because it is longer than the window is wide is
+called a "contination line". Emacs (and most other linux packages) use
+the \ as the signal that a line has been continued. Emacs does this
+dynamically with long lines: the \ is not actually in the file.
+
+The problem is what the cursor does when you move up and down a
+line. Logically, the cursor should skip to the next logical line. This
+is especially true when running keyboard macros. If your macro has C-n
+(next-line) and your macro processes a long line, you don't want the
+macro to break by running in the middle of the line instead of at the
+beginning. The visual mode also changes C-a and C-e which compounds
+the problem. Logical lines are a tiny bit confusing visually, but they
+are logical and sensible.
+
+Sadly, the default in Emacs was changed in 2008 or 2009 to be
+line-move-visual 't ('t is "true" in Lisp).
+
+Return to the sensible logical move by adding the following line to
+your .emacs file:
+
+(setq line-move-visual 'nil)
+
+In customization group Editing Basics, Line Move Visual controls
+whether or not the cursor moves to logical lines or visual lines. The
+difference is for continuation lines, the visual line is the next line
+on the screen. The logical line is the next actual line in the file,
+and not necessarily what is "visual" on the screen. This should not be
+confused with visual line mode.
+
+Keywords: line wrap, wrapping, continuation, visual, logical, cursor,
+cursor jump, cursor skip, skip line, skip continuation, wrapped lines,
+continuation lines, line continuation, line continuation mode, cursor
+movement mode, cursor mode, next line, next logical line, skip to
+logical line, cursor move, line visual move, line-move-visual, move
+logical, logical lines
+
+http://www.gnu.org/software/emacs/manual/html_node/emacs/Continuation-Lines.html
+
+
+Paste at cursor with mouse-yank-at-point
+----------------------------------------
+
+You may have noticed that when you paste into an X-windows (graphical)
+Emacs session, the insertion point becomes the location of the mouse
+cursor. This is a minor irritatant since you almost always want to
+insert at the current text cursor location. (And if you wanted to move
+the text cursor, you could left-click at that new location. Moving the
+text cursor upon middle-click is inconsistent and odd to my view of
+the UI.)
+
+There is an easy fix. Add this line to your .emacs or .xemacs/init.el file:
+
+(setq mouse-yank-at-point t)
+
+
+Unfill paragraph
+----------------
+
+Every now and then you may want to unfill a paragraph, turning several
+line wrapped lines into a single line. This would be the opposite of
+fill-paragraph. The multi-step solution is to query-replace C-j with
+nothing (use C-qC-j to enter a C-j).
+
+The naive single keystroke solutions simply set the fill-column to some
+very large number. It is unlikely that I'll have a paragraph with
+10000000 characters, but that naive method is inelegant.
+
+If found the following bit of code is slightly better because it uses
+point-max (a function) as the fill-column value. Using the function
+unfill-paragraph does not alter your fill-column value.
+
+;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
+;; Takes a multi-line paragraph and makes it into a single line of text.
+
+(defun unfill-paragraph ()
+  (interactive)
+  (let ((fill-column (point-max)))
+  (fill-paragraph nil)))
+
+You could put this in your .emacs file and bind it to a key (or not I
+suppose) or you could paste it into your *scratch* buffer and hit C-j
+at the end of the last line. 
+
+The *scratch* buffer is a "Lisp interaction" buffer which means that
+Lisp statements in this buffer are executed if you type C-j at the end
+of the statement. The "result" of the statement will print after you
+type C-j (control-j).
+
+

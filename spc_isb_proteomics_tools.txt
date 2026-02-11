@@ -1,0 +1,65 @@
+date: Mar  7  2006
+title:How to run SPC ISB tools.
+keywords:seattle,proteome,center,spc,proteomics,tools,nhlbi,proteomics,center,institute,systems,biology
+description:How to run readw.exe, msxml2other.exe, dtafilter, sequest27.exe, out2summary, interact.
+
+
+You must install cygwin and the SPC applications. However, the
+instructions for running these are very misleading, and the scripts
+that run other scripts have serious errors. Below are comments and the
+commands that worked. Apparently this sequence of commands was
+intended to be run by a shell script under cygwin. However, the shell
+script doesn't work, and the commands themselves are fairly easy to
+run (at least for a single run). If you do this many times, you'll
+need to get a programmer to write you a shell script, or even a Perl
+script (ActiveState makes a very nice free Perl for Windows).
+
+You might consider these to be examples. 
+
+(The authors of these scripts at SPC/ISB should feel free to contact me
+to shed light on why the original scripts failed. The failures mostly
+had to do with incorrect path assumptions and missing or incorrectly
+named files within the scripts. The cygwin shell error messages made
+it fairly easy for a Linux/Unix programmer (me) to guess the original
+author's intentions and run the proper commands.)
+
+#Create a .mzXML file from the .RAW file:
+
+readw.exe 3stds.RAW c
+
+# Try this command (my recollection is that the command
+# is msxml2other.exe not msxml2other (without the .exe):
+
+msxml2other.exe -dta 3stds.mzXML
+
+# If msxml2other.exe does not create a folder 3stds, then create that
+# folder manually and rerun msxml2other.exe
+
+mkdir 3stds
+
+# Copy the sequest.params file into the 3stds folder:
+
+cp sequest.params 3stds/
+
+# Change directory into the 3stds folder:
+
+cd 3stds
+
+# Filter (delete) dta files not meeting certain criteria:
+
+dtafilter -A -P15
+
+# Search all dta files. Here is a find command that should work:
+
+find . -name "*.dta" -print | xargs /cygdrive/c/Xcalibur/system/programs/Bioworks.browser/sequest27.exe
+
+# Create a summary 3stds.html file in the directory above 3stds:
+
+out2summary . > ../3stds.html
+
+# Change directory to the folder above 3stds:
+
+cd ../
+
+# Run Interact.
+

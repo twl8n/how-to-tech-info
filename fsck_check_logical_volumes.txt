@@ -1,0 +1,111 @@
+date: Jun 27  2007
+title:Checking logical volumns with e2fsck and hints for smartd
+description:How to make a logical volume active and check for bad blocks with fsck (e2fsck), how to run smartd, how to find alternate superblocks.
+keywords:disk,hard,drive,bad,sector,block,smart,smart,diagnose,blocks,drives,superblock
+
+
+Table of contents
+-----------------
+How to find the backup superblocks
+How to fsck (check) a LVM (logical volume)
+Hints for using smartd
+Alternate vgchange
+
+
+
+
+
+How to find the backup superblocks
+---------------------------------
+
+Sometimes when you try to fsck a volume, you get the "bad superblock"
+message. You need to try an alternate superblock. To get a list of possible 
+
+dumpe2fs /dev/hda1 | less
+
+I think you are looking for "Backup superblock". 
+
+
+
+
+How to fsck (check) a LVM (logical volume)
+------------------------------------------
+
+You can't fsck a mounted volume, and that applies to LVMs. You have to
+boot from some other media, and *not* mount your hard disk
+partitions. Additionally, LVMs have to be changed to an active state.
+
+Get the first CD of your install set or your rescue CD. Insert and at
+the prompt for which mode to boot enter:
+
+linux rescue
+
+(this applies to Fedora; other distros have alternate "rescue" mode commands")
+
+When asked if the software should search for Linux (Fedora?)
+distributions and mount them, answer "No" (skip). 
+
+Your rescue mode should give you a Linux prompt in single user mode.
+
+At the shell prompt, run "lvm"
+
+At the lvm prompt, enter:
+
+vgchange -a y
+
+It should respond that it has activated logical volumes and print the
+volumn names (devices, paths).
+
+Quit from lvm (quit).
+
+e2fsck can check for bad blocks, and simultaneously add any bad blocks
+to its badblocks table with the -c option. I suggest you also use -v
+so that you can see the status of this very slow operation.
+
+e2fsck -cv /dev/VolGroup00/LogVol00
+
+
+
+
+Hints for using smartd
+-----------------------
+
+I suggest that you preempt hard drive failures by running the smart
+daemon and occasionally checking its status. This is simplified by
+running Webmin.
+
+http://www.webmin.com/
+
+The smartd config file is /etc/smartd.conf and somewhere towards the
+top of the file add a line for each physical hard drive. These two
+lines are for a normal IDE drive, and a SATA drive:
+
+/dev/hda -a
+/dev/sda -a -d ata
+
+The smartd script is /etc/init.d/smartd and it takes the usual
+start/stop commands. You can enable smartd on boot by using chkconfig
+(or by using the boot configuration section of Webmin).
+
+The command line tool to check the drive status is smartctl. 
+
+smartctl -a /dev/hda 
+smartctl -d ata -a /dev/sda
+
+The -a will give you a synopsis of the drive's health. Read or
+write errors are bad.
+
+Webmin makes all this easy, and you don't have to remember the commands.
+
+
+
+
+Alternate vgchange
+------------------
+
+There is a web page that suggests
+
+vgscan | vgchange -a y
+
+However, this doesn't work with Fedora. There are no stand alone
+utilities "vgscan" or "vgchange".

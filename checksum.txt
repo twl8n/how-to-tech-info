@@ -1,0 +1,182 @@
+date: Jul 14  2008
+keywords:checksums,digest,dgst,openssl,md5,sha,sha1,sha256,sha384,verify,
+description:How to get checksum fingerprints
+title:Examples of Linux checksum fingerprints for files: md5, sha.
+
+Table of contents
+-----------------
+Quick example
+Additional notes
+
+
+
+Quick example
+-------------
+
+Two computers: zeus.example.com, hera.example.com
+User id: mst3k
+
+Back up /home/mst3k from zeus.example.com to hera.example.com to
+directory /home/mst3k/zeus_backup. Use cron. Below is the crontab
+entry. Put this text into a file crontab.txt and run the crontab
+loading command:
+
+crontab crontab.txt
+
+Below is crontab.txt:
+
+# field          allowed values
+# -----          --------------
+# minute         0-59
+# hour           0-23
+# day of month   1-31
+# month          1-12 (or names, see below)
+# day of week    0-7 (0 or 7 is Sun, or use names)
+
+0 3 * * * /bin/date >> rsync-out.txt ; /bin/nice /usr/bin/rsync -avz --delete -e ssh /home/mst3k mst3k\@hera.example.com:/home/mst3k/zeus_backup >> rsync-out.txt 2>&1
+
+
+
+Now you have a backup, but how to verify that the files in the backup
+are identical to the originals? Frequently backup are created without
+errors or warnings, but the files are not readable for whatever
+reason. This is a common occurance with tape systems, but can happen
+when backing up to hard drive or optical media. You can check the file
+checksums. This isn't complete (that would require a full restore, and
+some way to test the restore). However, checksums will reveal some of
+the more common failures.
+
+Login to hera. 
+
+cd /home/mst3k/zeus_backup/mst3k
+
+find ./ -type f -exec sha1sum {} \; > ~/zeus_sums.txt
+
+Login to zeus.
+
+scp hera:zeus_sums.txt .
+
+sha1sum -c anubis_sums.txt
+
+Here is a portion of the output:
+
+...
+./.kde/Autostart/.directory: OK
+./.ssh/authorized_keys: OK
+./.ssh/id_dsa: OK
+./.ssh/id_dsa.pub: OK
+./.ssh/known_hosts: OK
+./.ssh/known_hosts~: OK
+./.xemacs/custom.el: OK
+./.xemacs/custom.el~: OK
+./.xemacs/init.el: OK
+./.xemacs/init.el~: OK
+./crontab.txt: OK
+./crontab.txt~: OK
+./public_html/cowpea/CVS/Repository: OK
+./public_html/cowpea/CVS/Entries: OK
+./public_html/cowpea/CVS/Root: OK
+...
+./error.txt: OK
+./rsync-out.txt: FAILED
+./tmp.txt: OK
+./tmp.txt~: OK
+./try.pl: OK
+./try.pl~: OK
+sha1sum: WARNING: 1 of 667 computed checksums did NOT match
+
+All the files on zeus match the backup on hera except rsync-out.txt
+which is fine because that is the rsync log file and it should be out
+of date.
+
+
+If you delete some files from zeus, you'll get a warning like this:
+sha1sum: WARNING: 1155 of 1822 listed files could not be read
+
+
+
+Additional notes
+----------------
+
+
+As input we'll use the date command with nanoseconds. This is not
+random and it would be far more clever to figure out how to get a few
+bytes from /dev/random.
+
+See this online page:
+http://www.fileformat.info/tool/hash.htm?text=2008-03-26+10%3A15%3A05.893623535-04%3A00
+
+The various checksum digest commands have more or less the same
+format, except openssl.
+
+md5sum file
+
+openssl dgst -type_of_checksum file
+
+md5sum and similar programs print the checksum and the file name. If
+the source was stdin, then the file name is -
+
+Man pages have descriptions, although as of Fedora 8 in 2008, the
+openssl has several digests not mentioned in the man page.
+
+Available checksums from openssl seem to be:
+
+md5, md4, md2, sha1, sha, mdc2, ripemd160,
+
+as well as these undocumented digests:
+
+sha256, sha384, sha512
+
+Tab-complete from bash tells me these executables exist:
+sha1sum    sha224sum  sha256sum  sha384sum  sha512sum
+
+as well as the classic md5sum, and the older (?) cksum and sum.
+
+[zeus ~]$ date --rfc-3339=ns
+2008-03-26 10:30:12.586033647-04:00
+[zeus ~]$ echo -n "2008-03-26 10:30:12.586033647-04:00" | openssl dgst -md5
+66eb0dd85a05053ded4e4b94cfa51b26
+[zeus ~]$ echo -n "2008-03-26 10:30:12.586033647-04:00" | md5sum
+66eb0dd85a05053ded4e4b94cfa51b26  -
+[zeus ~]$ echo -n "2008-03-26 10:30:12.586033647-04:00" | openssl dgst -sha1
+b2e4c38153a14517a8290569ea860634001d4de3
+[zeus ~]$ echo -n "2008-03-26 10:30:12.586033647-04:00" | sha1sum
+b2e4c38153a14517a8290569ea860634001d4de3  -
+[zeus ~]$ echo -n "2008-03-26 10:30:12.586033647-04:00" | openssl dgst -sha512
+1b79e25e115affa870d7aeef06990b01b4df4a343f22b3a52cd1050a95da10839f60ce1a1475e6d6c9d8831b471a489c98d82e0a09b3632d7b68a3dff78402cc
+[zeus ~]$ echo -n "2008-03-26 10:30:12.586033647-04:00" | sha512sum
+1b79e25e115affa870d7aeef06990b01b4df4a343f22b3a52cd1050a95da10839f60ce1a1475e6d6c9d8831b471a489c98d82e0a09b3632d7b68a3dff78402cc -
+[zeus ~]$ echo -n "2008-03-26 10:30:12.586033647-04:00" | cksum
+467202395 35
+[zeus ~]$ echo -n "2008-03-26 10:30:12.586033647-04:00" | sum
+02721     1
+[zeus ~]$
+
+I'm not entirely clear about cksum and sum, but they seem to be rarely used.
+
+Several utilities such as md5sum have a mode to verify files. To run
+the check you (or someone giving you files) runs md5sum and gives you
+the file of the results. The check is performed by running md5sum in
+--check mode using the file of the results. Here is a somewhat trivial
+example. I've made a new directory, copied some Perl scripts into the
+new directory. I ran md5sum on the originals, then cd'd to the
+copy_dir and checked the copies.
+
+[zeus ~]$ mkdir copy_dir
+[zeus ~]$ cp -av *.pl ./copy_dir/
+`fix4cols.pl' -> `./copy_dir/fix4cols.pl'
+`modify_user.pl' -> `./copy_dir/modify_user.pl'
+`rev.pl' -> `./copy_dir/rev.pl'
+`test_del.pl' -> `./copy_dir/test_del.pl'
+`tmp.pl' -> `./copy_dir/tmp.pl'
+`try.pl' -> `./copy_dir/try.pl'
+[zeus ~]$ md5sum *.pl > check_us.txt
+[zeus ~]$ cd copy_dir/
+[zeus copy_dir]$ md5sum --check ../check_us.txt
+fix4cols.pl: OK
+modify_user.pl: OK
+rev.pl: OK
+test_del.pl: OK
+tmp.pl: OK
+try.pl: OK
+[zeus copy_dir]$ 

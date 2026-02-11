@@ -1,0 +1,165 @@
+date: Dec  8  2006
+title:Perl module minimum requirements
+keywords:perl,module,namespace,library,subroutines,my,our,local,use,require
+description:Perl module examples, including a tiny module and Perl scripts.
+
+Overview
+--------
+
+Perl modules are useful because they create a separate namespace for
+variables and subroutines. This allows you to hide variables and
+subroutines which restricts both read and write access. You can allow
+use of subroutines via the @EXPORT and @EXPORT_OK lists. Variables are
+shared by making them "our" instead of "my", or by not using "my" at
+all. The namespace prevents read/write of variables, even if the
+calling code explicitly references the variable. Note in the example
+that even though I try to read $tom::stuff, I get a null value. If I
+set a value of $tom::stuff, it does not overwrite the $stuff variable
+in package tom. It seems to create another variable, but I haven't
+checked to see if this "new" variable is in the tom:: namespace, or
+actually in main::. 
+
+Without the list in a "use" statement, you automatically get the
+default exports. If you import a list of subroutines, you must import
+all subroutines that you need. Even if some of those subroutines are
+exported by default, they have to be listed if there is a list.
+
+I don't totally understand references and typeglobs, but I have been
+unable to read/write package variables from outside the package. There
+may be hacks, bugs, or features that allow access even to "my" package
+variables. If you have critical security issues, you'll need to be
+more diligent than I've been here. 
+
+
+
+Minimum module
+--------------
+
+As far as I can tell, the following 6 lines are the minimum you'll
+need for a working Perl module. (Assuming your module is called "tom"
+and that you'll create a subroutine "print_stuff" that you want to
+export.) I have no idea what the @ISA list is. I'm mystified as to why
+$VERSION is required, but my code wouldn't run without it. Since I
+prefer to have a version for my libraries, this is fine by me. As far
+as I can tell, the name of the package must match the name of the
+module file, i.e. package tom; is in file tom.pm. I can't see any way
+to "alias" the module name (nor really any reason to alias a module).
+
+package tom;
+@ISA = qw(Exporter);
+@EXPORT = qw(print_stuff);
+use vars qw($VERSION);
+$VERSION = '7';
+return 1;
+
+
+
+Download
+--------
+
+Download module.tar
+
+http://defindit.com/readme_files/module.tar
+
+There are several examples, all of which run fine for me except
+try_3.pl which intentionally has an error. See try_3_errors.txt.
+
+
+Example Perl script
+-------------------
+
+
+#!/usr/bin/perl
+
+use strict;
+
+use tom qw(print_debug print_stuff);
+
+main:
+{
+    print "t:$tom::stuff\n";
+    
+    print "V:$tom::VERSION status:$tom::status\n";
+
+    my $d_val = print_debug();
+    print "debug:$d_val\n";
+
+    my $p_stuff = print_stuff();
+    print "p:$p_stuff status:$tom::status\n";
+
+    $p_stuff = print_stuff();
+    print "p:$p_stuff status:$tom::status\n";
+
+    $p_stuff = print_stuff();
+    print "p:$p_stuff status:$tom::status\n";
+    print "t:$tom::stuff\n";
+    
+}
+
+
+
+
+
+Example Perl module
+-------------------
+
+The module is file tom.pm.
+
+package tom;
+
+# Exporter must be in @ISA. Dynaloader seems to be optional.
+@ISA = qw(Exporter);
+
+# Subs we export by default.
+# Note, we that by default we don't export print_debug(), 
+# and we don't export print_one() at all.
+# This is intentional, and part of this example.
+@EXPORT = qw(print_stuff);
+
+# Subs we will export if asked. If you export everything necessary,
+# then you don't need @EXPORT_OK.
+# The subs would be in the LIST portion of the prototypical "use module LIST;"
+# e.g. use tom qw(print_debug);
+@EXPORT_OK = qw(print_debug);
+
+# The "use vars" and "$VERSION" statements seem to be required.
+use vars qw($VERSION);
+$VERSION = '7';
+
+# Your code goes below this line. From here down, you can pretty much
+# put whatever Perl you normally would for a library/API/module.
+# Remember to export subroutines as necessary.
+
+# Don't move use strict above this line since
+# some of the lines above are not strict.
+use strict;
+
+# Two local variables, not accessible from outside this package.
+my $stuff = "pie";
+my $debug = "cobbler";
+
+# A variable visible outside this package,
+# i.e. read/write from the main:: namespace.
+our $status = 0;
+
+sub print_one
+{
+    print "one\n";
+}
+
+sub print_stuff
+{
+    $stuff .= " ". length($stuff);
+    $status = 1; # Demo. Side effects are not good programming practice.
+    return $stuff;
+}
+
+sub print_debug
+{
+    return $debug;
+}
+
+return 1;
+
+
+

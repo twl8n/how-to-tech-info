@@ -1,0 +1,64 @@
+date: Sep 12  2007
+title:Quick numbered backups using cp
+keywords:backup,checkpoint,back,up,log,name,rotate
+description:Use cp to quickly great numbered backup files
+
+This command will create a backup of your iptables file (as an
+example). Answer y when cp asks if you want to overwrite
+iptables. The -i makes the cp command somewhat safer.
+
+cp -i --backup=numbered /etc/sysconfig/iptables .
+
+This assumes that you are not in /etc/sysconfig/ when you run the cp
+command.  This obvious mistake is not possible since cp is smart
+enough to know that the source and destination files are identical.
+
+Here is a sample session transcript. While this example may seem
+trivial to experience Linux sysadmins, this is useful and is something
+that won't be found in the cp man page (all man pages *should* have
+examples). There are several other Linux tricks here, including using
+i/o redirection via > to create a file, and using cat to quickly view
+a file. New Linux users should note that the dot "." appearing on a
+commmand line by itself (surrounded by spaces) means "here" or "use
+the same file name, but in this directory". There is another dot usage
+in shell commands where the dot is the first character and that
+meaning is to "source" or run a script file. 
+
+[zeus ~]$ echo 123 > test.txt
+[zeus ~]$ cat test.txt
+123
+[zeus ~]$ mkdir backs
+[zeus ~]$ cd backs
+[zeus backs]$ cp -i --backup=numbered ../test.txt .
+[zeus backs]$ echo 234 > ../test.txt
+[zeus backs]$ cat ../test.txt
+234
+[zeus backs]$ cp -i --backup=numbered ../test.txt .
+cp: overwrite `./test.txt'? y
+[zeus backs]$ ls -la
+total 1796
+drwxrwxr-x  2 twl8n twl8n    4096 Sep 12 10:37 .
+drwxr-xr-x 65 twl8n twl8n 1822720 Sep 12 10:36 ..
+-rw-rw-r--  1 twl8n twl8n       4 Sep 12 10:37 test.txt
+-rw-rw-r--  1 twl8n twl8n       4 Sep 12 10:37 test.txt.~1~
+[zeus backs]$ echo 345 > ../test.txt
+[zeus backs]$ cat ../test.txt
+345
+[zeus backs]$ cp --backup=numbered ../test.txt .
+[zeus backs]$ ls -al
+total 1800
+drwxrwxr-x  2 twl8n twl8n    4096 Sep 12 10:37 .
+drwxr-xr-x 65 twl8n twl8n 1822720 Sep 12 10:36 ..
+-rw-rw-r--  1 twl8n twl8n       4 Sep 12 10:37 test.txt
+-rw-rw-r--  1 twl8n twl8n       4 Sep 12 10:37 test.txt.~1~
+-rw-rw-r--  1 twl8n twl8n       4 Sep 12 10:37 test.txt.~2~
+[zeus backs]$ cat test.txt
+345
+[zeus backs]$
+
+
+Oddly, when I was logged in as root, the command below worked. It
+shouldn't.
+
+cp --backup numbered=t /etc/sysconfig/iptables .
+

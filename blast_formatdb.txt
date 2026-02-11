@@ -1,0 +1,189 @@
+date: May  9  2008
+keywords:blastall,blast,ncbi,search,gene,nucleotide,peptide,protein,fasta,perl,sql,bioinformatics
+description:The NCBI formatdb silently changes accession numbers if the numbers don't conform to a certain convention.
+title:Fasta files converted to NCBI BLAST search libraries with formatdb.
+
+
+Table of contents
+-----------------
+Introduction
+Using non-NCBI database identifier syntax
+A less desirable solution
+An even worse example
+
+
+
+Introduction
+------------
+
+
+Documentation for formatdb is in the blastall directory tree on your
+server. You can also find it online. There are also extra notes online.
+
+ftp://ftp.ncbi.nih.gov/blast/documents/formatdb.html
+
+http://www.ncbi.nlm.nih.gov/staff/tao/URLAPI/formatdb_fastacmd.html
+
+
+Using non-NCBI database identifier syntax
+-----------------------------------------
+
+Can formatdb not change the database name lcl? Yes, but you must use
+one of the "database names" known to NCBI blast. You must also stricly
+adhere to the format of the identifier syntax. Below are some examples
+of what happens when you don't follow the rules, and examples of what
+to do instead. The URLs above explain the fundamentals, but don't
+mention that formatdb will modify your identifiers unless you follow
+certain rules.
+
+I'll call a blast database a "search library" since the word database
+is most often taken to mean a "SQL database". Also, the word
+"database" has too many diverse meanings. Even worse, the query
+sequences are generally also in a "database" thus further confusing
+"search" and "query". 
+
+When you do a BLAST search you usually need to an NCBI formatted
+search library. (Newer versions of blast can use a simple fasta file
+as the search library.) We generally do large number of searches via a
+pipeline, and because we want the searches to be performed
+efficiently, we use NCBI formatted binary search libraries.
+
+The problem arises when you have a fasta file with a header like that
+found in the medicago protein library. (The "header" being the first
+line of the fasta file.) Here is a sample header entry before modification:
+
+>IMGA|AC135319_42.2 Protein kinase - null AC135319.28 87081-86445 E EGN_Mt071002 20080103
+mqdifgsvrrslvfraspennedhhhsigvggtttlvdkigycirnsrvfskpsppspsppipppirwrkgeligcgafghvyvgmnldsgellavkqvliaassaskekaqahvke
+leeevkllkdlshpnivrylgtvreedtlnillefvpggsissllgkfgafpeavirtyteqillgleylhkngimhrdikganilvdnkgcikladfgaskqvvelatmsgaksmk
+gtpywmapevilqtghsfsadiwsvgctviematgkppwsqqyqqevaalfhigttkshppipdhlssgakdfllkclqkepilrlsasellqgsfgasspsscapnvesllcstvn
+pqnsgnnhlwgmnndddmcviddneefsecdikykslmpdniesfnpmsdpsddwgckfdaspelenrevsldtdegymsrvqlesnkeqkdlpipcvpslseedeeltevkirafl
+dekalelkklqtplyeeffnslnascsptvidspsddisgrkylklppkskspsrvpnsspskavdnagspgsngrstvgnvdshgsqdvpaspinerkgmtvdsqqepfspslsfs
+erqrkwkeeldqelerkremmrqanmagktsspkdralhrqrertrfasps*
+
+
+We are interested in the first portion of the header:
+
+>IMGA|AC135319_42.2 Protein kinase
+
+It turns out that formatdb does not "like" this header because IMGA is
+know a known NCBI database. If you run formatdb, to create a binary
+NCBI search library, formatdb will create a new accession number. Even
+worse, if you use -o T to create indexes, formatdb will delete your
+original accession number. 
+
+The workaround is to use gnl| or lcl| as your database name. NCBI then
+preserves your identifier, and is capable of parsing out the accession
+number. In the following terminal session, I created a fasta file with
+a single sequence from the medicago proteins fasta file. I then ran
+formatdb, and finally I use fastacmd to dump the sequences as they appear
+inside the binary search library. Here we see that
+>gnl|IMGA|AC135319_42.2 has been preserved. 
+
+We recoment that you use gnl| or lcl| depending on the format of your
+identifier. 
+
+[twl8n@xi00 medicago_protein_20080108]$ cat tmp.fa
+>gnl|IMGA|AC135319_42.2 Protein kinase - null AC135319.28 87081-86445 E EGN_Mt071002 20080103
+mqdifgsvrrslvfraspennedhhhsigvggtttlvdkigycirnsrvfskpsppspsppipppirwrkgeligcgafghvyvgmnldsgellavkqvliaassaskekaqahvke
+leeevkllkdlshpnivrylgtvreedtlnillefvpggsissllgkfgafpeavirtyteqillgleylhkngimhrdikganilvdnkgcikladfgaskqvvelatmsgaksmk
+gtpywmapevilqtghsfsadiwsvgctviematgkppwsqqyqqevaalfhigttkshppipdhlssgakdfllkclqkepilrlsasellqgsfgasspsscapnvesllcstvn
+pqnsgnnhlwgmnndddmcviddneefsecdikykslmpdniesfnpmsdpsddwgckfdaspelenrevsldtdegymsrvqlesnkeqkdlpipcvpslseedeeltevkirafl
+dekalelkklqtplyeeffnslnascsptvidspsddisgrkylklppkskspsrvpnsspskavdnagspgsngrstvgnvdshgsqdvpaspinerkgmtvdsqqepfspslsfs
+erqrkwkeeldqelerkremmrqanmagktsspkdralhrqrertrfasps*
+[twl8n@xi00 medicago_protein_20080108]$ /xi.shared/blast-2.2.18/bin/formatdb -V -p T -o T -i tmp.fa
+[twl8n@xi00 medicago_protein_20080108]$ cat formatdb.log
+
+========================[ May 9, 2008 11:46 AM ]========================
+Version 2.2.18 [Mar-02-2008]
+Started database file "tmp.fa"
+Formatted 1 sequences in volume 0
+SUCCESS: formatted database tmp.fa
+[twl8n@xi00 medicago_protein_20080108]$ /xi.shared/blast-2.2.18/bin/fastacmd -p T -d tmp.fa -D1
+>gnl|IMGA|AC135319_42.2 Protein kinase - null AC135319.28 87081-86445 E EGN_Mt071002 20080103
+MQDIFGSVRRSLVFRASPENNEDHHHSIGVGGTTTLVDKIGYCIRNSRVFSKPSPPSPSPPIPPPIRWRKGELIGCGAFG
+HVYVGMNLDSGELLAVKQVLIAASSASKEKAQAHVKELEEEVKLLKDLSHPNIVRYLGTVREEDTLNILLEFVPGGSISS
+LLGKFGAFPEAVIRTYTEQILLGLEYLHKNGIMHRDIKGANILVDNKGCIKLADFGASKQVVELATMSGAKSMKGTPYWM
+APEVILQTGHSFSADIWSVGCTVIEMATGKPPWSQQYQQEVAALFHIGTTKSHPPIPDHLSSGAKDFLLKCLQKEPILRL
+SASELLQGSFGASSPSSCAPNVESLLCSTVNPQNSGNNHLWGMNNDDDMCVIDDNEEFSECDIKYKSLMPDNIESFNPMS
+DPSDDWGCKFDASPELENREVSLDTDEGYMSRVQLESNKEQKDLPIPCVPSLSEEDEELTEVKIRAFLDEKALELKKLQT
+PLYEEFFNSLNASCSPTVIDSPSDDISGRKYLKLPPKSKSPSRVPNSSPSKAVDNAGSPGSNGRSTVGNVDSHGSQDVPA
+SPINERKGMTVDSQQEPFSPSLSFSERQRKWKEELDQELERKREMMRQANMAGKTSSPKDRALHRQRERTRFASPS
+[twl8n@xi00 medicago_protein_20080108]$
+
+
+
+
+A less desirable solution
+--------------------------
+
+The solution below is somewhat workable, but we do not
+recommend it, and it is presented here only in the interest of
+completeness.
+
+It is possible to create a new accession number where the pipe "|" is
+replaced with an underscore "_". After being processed by formatdb,
+this results in identifiers in the binary search library that is
+prefixed with "lcl|" which seems to mean "local". 
+
+There are several negative consequences of not following
+standards. The most important is that the Hit_accession reported in
+the blast results has the prefix IMGA_ which would have to be trimmed
+off in order to get the real database name and accession number.
+
+Here is a session transcript:
+
+[twl8n@xi00 medicago_protein_20080108]$ cat tmp.fa
+>IMGA_AC135319_42.2 IMGA|AC135319_42.2 Protein kinase - null AC135319.28 87081-86445 E EGN_Mt071002 20080103
+mqdifgsvrrslvfraspennedhhhsigvggtttlvdkigycirnsrvfskpsppspsppipppirwrkgeligcgafghvyvgmnldsgellavkqvliaassaskekaqahvke
+leeevkllkdlshpnivrylgtvreedtlnillefvpggsissllgkfgafpeavirtyteqillgleylhkngimhrdikganilvdnkgcikladfgaskqvvelatmsgaksmk
+gtpywmapevilqtghsfsadiwsvgctviematgkppwsqqyqqevaalfhigttkshppipdhlssgakdfllkclqkepilrlsasellqgsfgasspsscapnvesllcstvn
+pqnsgnnhlwgmnndddmcviddneefsecdikykslmpdniesfnpmsdpsddwgckfdaspelenrevsldtdegymsrvqlesnkeqkdlpipcvpslseedeeltevkirafl
+dekalelkklqtplyeeffnslnascsptvidspsddisgrkylklppkskspsrvpnsspskavdnagspgsngrstvgnvdshgsqdvpaspinerkgmtvdsqqepfspslsfs
+erqrkwkeeldqelerkremmrqanmagktsspkdralhrqrertrfasps*
+[twl8n@xi00 medicago_protein_20080108]$ /xi.shared/blast-2.2.18/bin/formatdb -V -p T -o T -i tmp.fa
+[twl8n@xi00 medicago_protein_20080108]$ cat formatdb.log
+
+========================[ May 9, 2008 11:51 AM ]========================
+Version 2.2.18 [Mar-02-2008]
+Started database file "tmp.fa"
+Formatted 1 sequences in volume 0
+SUCCESS: formatted database tmp.fa
+[twl8n@xi00 medicago_protein_20080108]$ /xi.shared/blast-2.2.18/bin/fastacmd -p T -d tmp.fa -D1
+>lcl|IMGA_AC135319_42.2 IMGA|AC135319_42.2 Protein kinase - null AC135319.28 87081-86445 E EGN_Mt071002 20080103
+MQDIFGSVRRSLVFRASPENNEDHHHSIGVGGTTTLVDKIGYCIRNSRVFSKPSPPSPSPPIPPPIRWRKGELIGCGAFG
+HVYVGMNLDSGELLAVKQVLIAASSASKEKAQAHVKELEEEVKLLKDLSHPNIVRYLGTVREEDTLNILLEFVPGGSISS
+LLGKFGAFPEAVIRTYTEQILLGLEYLHKNGIMHRDIKGANILVDNKGCIKLADFGASKQVVELATMSGAKSMKGTPYWM
+APEVILQTGHSFSADIWSVGCTVIEMATGKPPWSQQYQQEVAALFHIGTTKSHPPIPDHLSSGAKDFLLKCLQKEPILRL
+SASELLQGSFGASSPSSCAPNVESLLCSTVNPQNSGNNHLWGMNNDDDMCVIDDNEEFSECDIKYKSLMPDNIESFNPMS
+DPSDDWGCKFDASPELENREVSLDTDEGYMSRVQLESNKEQKDLPIPCVPSLSEEDEELTEVKIRAFLDEKALELKKLQT
+PLYEEFFNSLNASCSPTVIDSPSDDISGRKYLKLPPKSKSPSRVPNSSPSKAVDNAGSPGSNGRSTVGNVDSHGSQDVPA
+SPINERKGMTVDSQQEPFSPSLSFSERQRKWKEELDQELERKREMMRQANMAGKTSSPKDRALHRQRERTRFASPS
+[twl8n@xi00 medicago_protein_20080108]$
+
+
+As it appears in blast results:
+          <Hit_num>1</Hit_num>
+          <Hit_id>lcl|IMGA_AC135319_42.2</Hit_id>
+          <Hit_def>IMGA|AC135319_42.2 Protein kinase - null AC135319.28 87081-86445 E EGN_Mt071002 20080103</Hit_def>
+          <Hit_accession>IMGA_AC135319_42.2</Hit_accession>
+          <Hit_len>636</Hit_len>
+ 
+
+
+
+
+An even worse example
+---------------------
+
+If your identifier includes a database name unknown to NCBI, such as
+"IMGA", then formatdb will create a new identifier. This new
+identifier is only useful with the binary search library. This is the
+worst way to handle data.
+
+As it appears in blast results:
+          <Hit_num>1</Hit_num>
+          <Hit_id>lcl|16480_20080103_imgag_prot.fa</Hit_id>
+          <Hit_def>Protein kinase - null AC135319.28 87081-86445 E EGN_Mt071002 20080103</Hit_def>
+          <Hit_accession>16480_20080103_imgag_prot.fa</Hit_accession>
+          <Hit_len>636</Hit_len>
+

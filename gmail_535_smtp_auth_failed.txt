@@ -1,0 +1,43 @@
+date: Oct 27  2010
+keywords:gmail,535,smpt,bounce,email,auth,authentication
+description:Fixing a 535 smtp auth failed error in Gmail
+title:535 smtp auth fix
+
+
+The key is this error message that is part of the bounce back:
+
+535 SMTP AUTH failed with the remote server. (state 8).
+
+See these Gmail support threads:
+
+http://www.google.com/support/forum/p/gmail/thread?tid=4986b2de29ca8e4f&hl=en&fid=4986b2de29ca8e4f0004939e193d20e5
+
+http://www.google.td/support/forum/p/gmail/thread?tid=08a60ebf5db24f7b&hl=en
+
+
+Cause: either Google or your SMTP gateway has lost authentication
+(lost your password), or you changed your password in the account you
+are using for "send mail as". 
+
+Solution: In my case I changed my "Send mail as" user name from
+"mst3k@virginia.edu" to "mst3k". Prior to today there was no problem
+with the old user name. I have not change my password. There is no
+apparently change at the virginia.edu mail servers, but it is possible
+that something changed at virginia.edu.
+
+
+Here are the exact steps to fix this problem, starting in Gmail:
+
+click "Settings"
+click "Accounts and Imports"
+scroll to "Send mail as"
+click "edit info" for the account in question
+a dialog box pops up
+click "next step"
+check your user name
+click "Edit your password"
+enter password
+click "save changes"
+
+Google will immediately try your user name and password. There will be
+a red error message if the authentication didn't work.

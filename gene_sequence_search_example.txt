@@ -1,0 +1,84 @@
+date: Feb 19  2007
+keywords:gene,space,sequence,protein,gss,peptide,amino,acid,blast,search,alignment,cdna,strand
+description:How to verify translation between Blastx results and an original gene space sequence.
+title:GSS search and protein aligment explained for programmers.
+
+This page is intended to scroll horizontally in your web browser. This
+obviates goofy line wrapping conventions that are irritating in
+multi-line alignments.
+
+BlastX translates input gene sequences into all 6 reading frame, then
+translates each sequence into a protein. The translated proteins are
+searched against a database of proteins (usually proteins of known
+identity). This process also applies when comparing two libraries of
+gene sequences. Each library is translated into the 6 reading frames
+and searched with Blast (TBlastX, resulting in 12 searches). Genes vs
+proteins is 6 searches, genes vs genes is 12 searches. Clearly it
+would be computationally simpler to search genes vs genes without
+translation, however, gene sequences are not well conserved in nature,
+whereas protein sequences are reasonably well conserved. The extra
+computational effort makes biological sense.
+
+Below are the details of a gene sequence translated to a protein, and
+matched up with a protein hit. Sequence numbering starts with one, not
+zero. Sequence from and to are inclusive numbers.
+
+Reading frames are 3, 2, 1, -1, -2, and -3.
+
+Forward reading is 5' to 3' (five prime to three prime). Reverse
+strands are 3' to 5'. For reasons not entirely clear to me,
+translation is often done on the complementary strand. Complement is
+the Perl tr// operation:
+
+$seq =~ tr/acgtACGT/tgcaTGCA/;
+
+Uppercase and lowercase are often not well defined, and seem to
+reflect the whim of the biologist or programmer involved. When
+defined, typically uppercase are better quality values (such as Phrap
+base-calling quality values). In the example below, case has little
+meaning.
+
+
+This is not the best hit for bs_fk 82842, just one I chose at random
+to test.  The best hit (based on e score) is for a longer sequence
+(albeit it has a gap), and is in reading frame -1 instead of the
+reading frame -2 shown below.
+
+My database br_pk=149358
+My database bs_fk=82842
+
+Here are a few relelvant fields from the blast results:
+
+hsp_hit_from | hsp_hit_to | hsp_positive | hsp_query_frame | hsp_query_from | hsp_query_to
+--------------+------------+--------------+-----------------+----------------+--------------
+          147 |        187 |           36 |              -2 |            474 |          596
+
+                 hsp_qseq                  |                hsp_midline                |                 hsp_hseq            
+-------------------------------------------+-------------------------------------------+-------------------------------------------
+ VGVPFERIKRLGEEDNFWTSGVTGPCGPCSEIYYDFHPERG | +G+  +RI +LGE+DNFW+SG TGPCGPCSE+Y+DF PE+G | IGIHPKRIIKLGEKDNFWSSGKTGPCGPCSELYFDFKPEKG
+
+
+Original GSS from the cowpea database. "|" marks a base location. Numbering starts at 1.
+AAAACCATATGAAACATTTGCTAACTTAGAGGCCTCTTCTATGATGGGGAAAATCAAGTCAGTTTCATAATTGTTTGGAACCTGCAGAAAGCATTGGCTATATGTAAGATGGACTTTAGGAGCATGTGAAATGATAGTTCTAGTGCTCCAGAAGTTCTTCCTAAAATGTAAACGTAACAACTACAACAACAAAAAATCAACATAGTGAACATATACCTGTTGAAGAATACGAGCCATACGCTCCAGTCCCAGGCCAGTGTCTATGTTCTTCTGTTTTAGAGGTTCAAGAGAACCATCATCCTTTTTGTTGTATTGCATGAAGACTAAGTTGTAGAACTCTATAAACCTTGTATCGTCATTGAGATCCTGCTTTCATCCCCCAGGTCCCAACCACCCAACAAATATAAAATATTGTCTCTGAAATGATATTGAATCCTTCAATCTAAAAATGGAATACTTACAGCATCTACATATCCCCTCTCAGGATGAAAATCATAATAAATTTCTGAGCAAGGACCACAGGGACCTGTCACTCCACTAGTCCAGAAGTTGTCTTCTTCTCCCAACCTTTTTATACGTTCAAATGGGACACCAACCTGCACGGAAATCAAGTAAGCAATAGGAACAATAATCCAATACTCTTTGTAAAATGTTCACTAGTCAAAAcaGaagtTAGTtatGTAAGCAAaTAATAcg
+|1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |474                                                                                                                      |596
+
+474 thru 596 3'5' frame -1 (this sub-nucleotide is exact in frame -1, even though the whole GSS is read in frame -2).
+(translated seq is reverse, complement)
+gttggtgtcccatttgaacgtataaaaaggttgggagaagaagacaacttctggactagtggagtgacaggtccctgtggtccttgctcagaaatttattatgattttcatcctgagagggga (translated seq)
+ V  G  V  P  F  E  R  I  K  R  L  G  E  E  D  N  F  W  T  S  G  V  T  G  P  C  G  P  C  S  E  I  Y  Y  D  F  H  P  E  R  G  
+tcccctctcaggatgaaaatcataataaatttctgagcaaggaccacagggacctgtcactccactagtccagaagttgtcttcttctcccaacctttttatacgttcaaatgggacaccaac (original seq)
+Check peptide (from below):
+ V  G  V  P  F  E  R  I  K  R  L  G  E  E  D  N  F  W  T  S  G  V  T  G  P  C  G  P  C  S  E  I  Y  Y  D  F  H  P  E  R  G
+
+Gene sequence translated to protein sequence (peptide) by: http://ca.expasy.org/tools/dna.html
+Reading frame -2  (negative frame is 3' to 5')
+The protein squence displayed here has been "fixed" with two translations, and spaces removed:
+$ = Stop
+^ = M
+                                                                                                                 VLFAYITNFCFD$$TFYKEYWIIVPIAYLISVQVGVPFERIKRLGEEDNFWTSGVTGPCGPCSEIYYDFHPERGYVDAVSIPFLD$RIQYHFRDNILYLLGGWDLGDESRIS^TIQGL$SSTT$SSCNTTKR^^VLLNL$NRRT$TLAWDWSVWLVFFNRY^FT^LIFCCCSCYVYILGRTSGALELSFH^LLKSILHIANAFCRFQTI^KLT$FSPS$KRPLS$Q^FH^V
+                                                                                                                                                  VGVPFERIKRLGEEDNFWTSGVTGPCGPCSEIYYDFHPERG (query peptide, hsp_qseq)
+                                                                                                                                                  +G+  +RI +LGE+DNFW+SG TGPCGPCSE+Y+DF PE+G (midline, hsp_midline)
+                                                                                                                                                  IGIHPKRIIKLGEKDNFWSSGKTGPCGPCSELYFDFKPEKG (hit peptide sequence, hsp_hseq)
+MKSQTKNTPITGDEIRKEFLNFYHEKLHKIIPSASLIPDDPTVMLTIAGMLPFKPVFLGLKERPSKRATSSQKCIRTNDIENVGVTARHHTFFEMLGNFSFGDYFKKEAIEWAWELVTDIYGLSAENIIVSVFHEDDDSVKIWKEDIGIHPKRIIKLGEKDNFWSSGKTGPCGPCSELYFDFKPEKGVQNIDLEDGDRFIEFYNLVFMQYNRDPDGQLTDLKYKNIDTGMGLERMAQILQKKKNNYETDLIFPIIQKASEISKIDYYSSGERTKISLKIIGDHIRAVIHLISDGVIASNLGRGYILRRLIRRMVRHGRLLGLKNEFLSKLASVGIKLMQENYPDLKNNCDHILSEIKIEEIRFRETLERGEKLLDELISSGQKMITGFKAFELYDTYGFPLELTEEIAQENNIGVDVKGFDKEMSAQKERAKAASQIIDLTLEGSLEREIDLFDKTLFNGYDSLDSDAEIKGIFLESTLVKQASEGQKVLIVLDQTSFYGESGGQVGDIGTILSNDLEVVVDNVIRKKNVFLHYGIVKKGILSLGQKVKTKVNDLARAKAAANHTATHLLQSALKVVVNESVGQKGSLVAFNKLRFDFNSSKPITKDQIFKVETLVNSWILENHSLNIKNMAKSEALERGAVAMFGEKYDDEVRVVDVPSVSMELCGGTHVKTTSELGCFKIISEEGISAGVRRIEALSGQSAFEYFSDKNSLVSQLCDLLKANPNQLLDRVNSLQSELINKNKEIQKMKDEIAYFKYSSLSSSANKVGLFSLIISQLDGLDGNSLQSAALDLTSKLGDKSVVILGGIPDKENRKLLFVVSFGEDLVKRGMHAGKLINDISRICSGGGGGKPNFAQAGAKDIDKLNDALEYARKDLRTKLHSYSDK
+|1                                                                                                                                                |147                                    |187
+

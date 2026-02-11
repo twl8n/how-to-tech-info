@@ -1,0 +1,39 @@
+date: Dec  8  2006
+title:RCS Keywords, date, etc. and timezone hints
+keywords:rcs,ci,co,cvs,time,zone,udt,keywords,date,id,revision,
+description:Keyword variables available in RCS, and how to force the timezone to be local.
+
+
+See "man co" for RCS keywords including:
+
+$Author$
+$Date$
+$Header$
+$Id$
+$Locker$
+$Log$
+$Name$
+$RCSfile$
+$Revision$
+$Source$
+$State$
+
+Dates default to UDT (heaven only knows why they don't default
+to the local timezone). I tried entering -zEDT, but that resulted in
+some very strange looking timestamps. -zLT memnonic for Local Timezone
+works just fine. 
+
+CVS has the same "feature", but I haven't bothered to figure out if
+the -z option works with CVS or what is necessary to get CVS to use
+the local timezone.
+
+Checkin your file with a command like this:
+
+ci -zLT -m"checkin comment" -l file
+
+
+Here is an example snippet from of Perl source:
+
+#!/usr/bin/perl
+# $Id: tom.pm,v 1.7 2006-12-07 14:04:43-05 mdt3k Exp mdt3k $
+

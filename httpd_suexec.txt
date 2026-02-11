@@ -1,0 +1,654 @@
+date: Feb  6  2013
+title:Apache httpd suExec, Rewrite and VirtualHost
+keywords:apache,suexec,su,exec,httpd,rewrite,permissions,privs,privileges,forbidden,uid,suid,script,document,root,target,mismatch,suexec.log,logs,www,
+description:How to get suExec working for Virtual Hosts and RewriteEngine examples for scripts.
+
+Table of contents
+-----------------
+Synopsis
+Security issues
+Suexec situations
+What is DocumentRoot?
+The workaround with embedded comments
+Old workaround
+Explanation of old workaround
+Test script
+Debugging mod_rewrite and pattern matching
+Mismatch with directory or program
+Additional notes on suexec security
+
+
+
+Synopsis
+--------
+
+Security is complex so I suggest that you read this entire
+document as well as all security related documentation at:
+
+http://httpd.apache.org/
+
+Be aware that my recommendations may contain errors, or may
+have gone out of date. I strongly suggest that you test
+these permission settings on your web site.
+
+The recommended settings for CGI with multiple users are: 
+
+- suexec enabled, UserDir enabled
+
+- each web site's document root in that user's public_html
+
+- virtual hosting enabled, use SuexecUserGroup.
+
+- all users are in the same group (for example 'users') 
+
+- user files and directories do not have group read/write (this is important)
+
+
+When running CGI scripts on an web server, you will often
+need to read and write data to files. On a multiuser server,
+you do not want other users reading or writing each others
+files (accidentally or on pupose). The solution is to use
+Apache's suexec so that each user runs scripts as their
+self. All users are in the same group (usually "users") and
+all user directories do not have group read/write. When a
+directory or file does not have group read permissions, then
+anyone in that group cannot read that file or
+directory. This is important.
+
+Remember that when the permissions are wrong (g+r) or suExec
+is not being used, CGI scripts have the privileges of Apache
+httpd, and that every user's CGI scripts have the same
+privileges. In this instance, CGI scipts get around shell
+login restrictions, and can read any other users g+r files
+and directories! Security requires that all these settings
+work togther.
+
+Note that suexec only applies to executable scripts. Normal
+web file content is still served by Apache running with its
+normal user/group. Therefore all content (.html, .css, .js,
+etc.) must be other-readable o+r and directories containing
+those files must be at least other-execute o+x.
+
+
+For web accessible, non executable files the permissions are:
+
+    u+rw,g-rwx,o+r or 604/-rw----r--
+
+Executables and scripts:
+
+    u+rwx,g-rwx,o-rwx or 700/-rwx------
+
+For directories I suggest setting the permissions to:
+
+    u+rwx,g-rwx,o=x, or 0701/drwx-----x.
+
+If you want to use "Indexing" then directories must be o+r:
+
+    u+rwx,g-rwx,o=rx or 0705/drwx---r-x.
+
+
+Note that directories with o+r allow Apache to use indexing
+(display a list of files in that directory) assuming that
+indexing is allowed by a directive. Setting directory
+permissions to o=x aka 0701/drwx-----x will prevent
+indexing.
+
+Consider the case where scripts for all users run as the
+user "apache" or "www". This means that every user can read
+and write your g+r files via CGI.  Even if the files are
+created as rw only for apache, and other users are not in
+the apache group, a trivial CGI script will enable access to
+other files because the script runs as apache, and apache
+has group read privs.
+
+The solution is that your scripts run as you via suExec. You
+store data in directories outside the web accessible
+area. Apache will su to you via suexec. Suexec requires URL
+have ~userid, or the virtual host has a SuexecUserGroup
+directive. (It is possible to rewrite CGI requests via the
+RewriteEngine to ~userid, and then suexe will work.) Suexec
+only works in virtual hosting or with user directories. (For
+files in document root, you can only have one
+SuexecUserGroup directive, and thus only one user, defeating
+the purpose of separating users from each other.)
+
+Apache docs say this:
+
+    "Requests for CGI programs will call the suEXEC wrapper
+    only if they are for a virtual host containing a
+    SuexecUserGroup directive or if they are processed by
+    mod_userdir."
+
+http://httpd.apache.org/docs/2.2/suexec.html#usage
+
+
+Also be aware of +x on html files and the XBitHack which
+applies to server side includes.
+
+
+Security issues
+---------------
+
+You always need to harden your CGI scripts. You must sanitize any
+input from users, and you must never expose user input to the command
+line. There are powerful features that we often use, but we must use
+them carefully in CGI scripts. Common "exposures" with Perl CGI are:
+
+- backticks which exist to run commands and return stdout from those
+  commands 
+
+- the system() function which exists to run commands which will not
+  return stdout
+
+- the open() command which is used for opening files, but has
+  exceptional powers, and allows command line access. Always use the
+  "3 argument" form of open().
+
+I cannot think of a reason that your scripts ever need to write a file
+in web accessible areas. Your scripts may need to write files, but
+there are always techniques that allow you to do your work using files
+in non-web accessible directories. This is important since many
+exploits (hacks) involve tricking your script to write a back-door
+file into a web accessible directory.
+
+For example /home/mst3k/public_html is web accessible. Document root
+is usally /var/www/html and is also web accessible. On the other hand
+/home/mst3k is not accessible to the web server. If a hacker is only
+able to write files to /home/mst3k, then it might be difficult or
+impossible for that hacker to break into your server. 
+
+To go one step further, if the server is not shared with other users,
+then you don't need (and probably do not want) suexec. Simply disable
+suexec and force all CGI scripts to run as user apache (or in some
+configurations user "www"). The user apache should not have a login (and
+by default will not) and does not have a home directory. There are
+very few directories in which apache is allowed to write files. This is
+good from a security standpoint. You want CGI scripts to run with very
+few privileges, a bare minimum. If your CGI needs to write files, put
+those files into a directory created specifically with permissions
+that allow apache to read and write. Do not locate the read/write
+directory in a web accessible directory tree.
+
+Most CGI applications are on servers with many users, thus the use of permissions and suexec.
+
+Dynamic applications generally need a data source, and generally need
+to save information. I suggest using SQLite and the Perl DBI/DBD SQL
+interface. Allow apache read/write permissions to the SQLite
+database which you locate (as always) in a non-web accessible
+directory.
+
+If your CGI application needs to create web pages, the solution is to
+create these in a non-accessible area. Serve the pages up with a small
+script that uses special, internal identifiers for each page. Do not
+use the page file name since hackers will substitute their own file
+name instead. Use a numeric identifier. This scenario is:
+
+1) Scripts creates a web page /home/mst3k/static_script_pages/a.html
+
+2) a.html has numeric id 1.
+
+3) The Perl script my_server.pl?id=1 looks at a database or data file,
+learns that id=1 is associated with a.html, and other configuration
+determines that the created page directory is
+/home/mst3k/static_script_pages. my_server.pl therefore can find the
+full path to the file, read the file and print the file to stdout with
+an appropriate CGI header.
+
+Creating this type of CGI application is aided by subroutines that
+handle configuration and provide access to SQL databases. For SQL on a
+single host I suggest SQLite. For multiple hosts, heavy loads, or
+"real" database needs I suggest PostgreSQL.
+
+For configuration, try my app_config subroutine which is part of the
+session_lib Perl module. The Perl examples include SQL and use of
+app_config().
+
+http://defindit.com/session_lib.tar
+
+http://defindit.com/perl_sql_example.tar
+
+
+
+Suexec situations
+------------------
+
+Suexec works great if:
+
+1) you have a virtual host and your files are in document
+root, and "document root" might (optionally) be ~userid aka
+/home/mst3k/public_html.
+
+2) no virtual host and your files are in the userdir
+(assuming you have userdir enabled)
+
+I strongly recommend you use the current release of Apache
+httpd, and ignore the workaround for older versions.
+
+Older versions of Apache do not have SuexecUserGroup, and
+thus a workaround with mod_rewrite aka RewriteEngine is
+necssary for suexec to work with virtual hosted domains
+whose document root is in a user's public_html.  Since these
+URLs don't contain ~userid, you need the workaround the
+below. As far as I know, using the Apache RewriteEngine as
+outlined below is secure.
+
+This workaround has been tested with Apache 2, and as far as
+I know this (mostly) also works with Apache 1.3.
+
+The Apach 2 suexec docs are:
+http://httpd.apache.org/docs-2.0/suexec.html
+
+For the following examples, we'll assume that our machine
+has a virtual host "example.com", and you are the user
+"mst3k". You either have root access, or the sysadmin is
+willing to help you and is willing to let you use some
+powerful Apache features.
+
+
+
+What is DocumentRoot?
+---------------------
+
+"document root" in this context is what is returned by
+suexec -V (you must be root to run this command).
+
+[root@example ~]# suexec -V
+ -D AP_DOC_ROOT="/var/www"
+ -D AP_GID_MIN=100
+ -D AP_HTTPD_USER="apache"
+ -D AP_LOG_EXEC="/var/log/httpd/suexec.log"
+ -D AP_SAFE_PATH="/usr/local/bin:/usr/bin:/bin"
+ -D AP_UID_MIN=500
+ -D AP_USERDIR_SUFFIX="public_html"
+[root@example ~]#   
+
+There are several things we can conclude from this output above, and
+some of these are none too obvious
+
+- The VirtualHost directive SuexecUserGroup will only work for scripts
+somewhere in AP_DOC_ROOT which is /var/www for this example. Changing
+document root in a VirtualHost with the DocumentRoot directive will
+*not* effect this setting. Directories symlinked as subdirectories of
+/var/www are supported, and will suexec. 
+
+- The userdir is public_html (as usual).
+
+- Users with a uid under 500 can't suexec. Groups with gid under 100
+  can't suexec.
+
+There are some good practical reasons to locate every user's document
+root in /home/user/public_html even when virtually hosting. It keeps
+all the files owned by non-admin users in /home. The user's
+public_html is a real directory in the user space, and not a symlink
+to a subdirectory in /var/www. The /var file system doesn't need to be
+large enough to accomodate web space (not a problem on most modern
+systems, but a headache in the old days). If everything a user needs
+is in /home/user, there is no need for symlinks to other parts of the
+disk. Backups are easier when all the user data is in /home (I also
+keep user's mail boxes in /home as well, i.e. /home/mst3k/Maildir and
+the user's httpd logs are in /home/mst3k/logs).
+
+The problem stems from how paranoid suexec is. If the URL contains
+~userid, then suexec will happily su from apache to userid. However,
+if the URL is a virtually hosted URL (in the identical directory) and
+does not contain ~userid, then suexec will *not* su (switch user). For
+example /home/mst3k/public_html is document root for the virtually
+hosted example.com. Normally suexec will su for
+http://example.com/~mst3k/test_id.pl, but will not su for
+http://example.com/test_id.pl even though it is the same script in the
+same directory.
+
+
+
+
+The workaround with embedded comments
+-------------------------------------
+
+In order to have your scripts suexec to you instead of running as
+apache or www, use a .htaccess file with the following RewriteEngine
+rules between -- and --
+
+
+--
+DirectoryIndex index.html index.pl index.cgi
+Options +ExecCGI +SymLinksIfOwnerMatch
+AddType application/xml .xml
+AddHandler cgi-script .pl .cgi
+XbitHack on
+
+RewriteEngine on
+RewriteBase /
+
+# If the request URI is /~mstk3k/index.html
+# then the RewriteRule matches on index.html
+
+# If the request URI is /~mstk3k/foo/index.html
+# then the RewriteRule matches on foo/index.html
+
+
+# Rewrite non ~ requests as ~userid requests so that suexec works. If
+# you rewrite all requests (including those with a ~ then you'll have
+# a redirect loop. These rules do not redirect, they only *rewrite*
+# the request. In other words, these rules change how Apache treats
+# the request, but the browser still sees the original URL. The effect
+# of these rules is almost impossible to detect from the browser. 
+
+# The main trick is that the RewriteCond immediately before the
+# RewriteRule must have a capturing regular expression that captures
+# the userid in %1 (the first captured expression).
+ 
+# When using virtual hosting to a user's public_html directory, the
+# document root will be the user's public_html, for example
+# /home/mst3k/public_html.
+
+# However, when using an Alias directive document root will be the
+# normal document root which is usually /var/www/html. When using
+# Alias we have to get the userid from the SCRIPT_FILENAME instead of
+# document root. The rules below work for when the alias is to
+# ~/public_html. For example:
+# Alias /foo/ "/home/mst3k/public_html/"
+
+# The Alias rules below only support .pl and .cgi file extensions.
+
+# The rules below are for Alias.
+
+RewriteCond %{REQUEST_URI} !^/~.*$
+RewriteCond %{SCRIPT_FILENAME} \/home\/(.*)\/public_html\/(.*\.(pl|cgi))
+RewriteRule ^.*$ /~%1/%2 [L]
+
+# The rules below are for virtual hosting.
+
+RewriteCond %{REQUEST_URI} !^/~.*$
+RewriteCond %{DOCUMENT_ROOT} \/home\/(.*)\/public_html
+RewriteRule ^(.*)$ /~%1/$1 [L]
+
+# Notes about mod_rewrite
+
+# Use something like the rewrite below to debug pattern matching.
+# Clear your browser cache, of force a non-cached reload (shift-reload
+# in Firefox). 
+
+# The whole string that RewireRule matches against becomes the query
+# string. This is useful because what RewriteRule matches against is
+# not the URI. Every request is redirect to foo.html. Enable this only
+# for debugging.
+
+# RewriteCond %{REQUEST_URI} !foo
+# RewriteRule (.*) /~twl8n/foo.html?$1 [R,L]
+--
+
+
+As explained in the comments, there are two variants: 
+
+1) a new version for use with the "Alias" directive where document
+   root is still the Apache default /var/www/html.
+
+2) the original for use with virtual hosting where your document root
+   is also your home directory
+
+Most of the notes from below still apply.
+
+In order to debug this process, you'll want my envquery.pl script (see
+notes below about downloading) and you may want to uncomment the two
+final lines in the .htaccess example above. 
+
+These are the lines:
+RewriteCond %{REQUEST_URI} !foo
+RewriteRule (.*) /~twl8n/foo.html?$1 [R,L]
+
+These lines help you answer the question "What string is RewriteRule
+matching the regex against?"
+
+It is often useful to make small changes in working rules when
+debugging the regular expressions. Also, when changes to .htaccess do
+not seem to have any effect, be sure you are doing a non-cached forced
+page reload. In Firefox this is "shift-reload". I think it is
+"control-refresh" in IE.
+
+
+
+Old workaround
+--------------
+
+The following workaround applies to httpd.conf or .htaccess. However,
+for it to work in .htaccess you'll need privileges. I've used
+AllowOverride all, but some lesser privileges may work.
+
+Copy the following lines into the highest level .htaccess file,
+e.g. into /home/mst3k/public_html (as opposed to a sub directory of
+public_html).
+
+This version will only redirect Perl scripts (.pl). As far as I know,
+it will work for scripts in subdirectories without the need for an
+additional copy in each subdirectory's .htaccess file.
+
+# Workaround to get non-tilde URLs to become
+# tilde URLs so that Apache will correctly su to mst3k
+# instead of running the scripts as user apache.
+
+RewriteEngine on
+RewriteBase /
+RewriteCond %{REQUEST_URI} !~
+RewriteCond %{REQUEST_URI} ^\/.*\.pl$
+RewriteCond %{DOCUMENT_ROOT} \/home\/mst3k\/public_html
+RewriteRule ^(.*)$ /~mst3k/$1 [L]
+
+
+
+Below is the original version that I used. This had some "features":
+
+1) It doesn't [L] and therefore the rule evaluation continues and
+evaluation of following rules can lead to unexpected results.
+
+2) Although this looks safe from infinite loops (redirection loops),
+when working on an instance of this code, I got an infinite loop (it
+may have involved a subdirectory, or could have been an unrelated
+bug). The version above does not loop.
+
+3) The use of the capturing regex to get the userid is clever and
+flexible. It is also slightly less efficient than the hard coded
+version.
+
+
+RewriteEngine on
+RewriteBase /
+RewriteCond %{REQUEST_URI} !^/~.*$
+RewriteCond %{DOCUMENT_ROOT} \/home\/(.*)\/public_html
+RewriteRule ^(.*)$ /~%1/$1
+
+
+
+Explanation of old workaround
+-----------------------------
+
+
+
+This is the explanation of the original version.
+
+# Enable the rewrite engine
+RewriteEngine on
+
+# Set the path. I think / is equivalent to the current setting of DocumentRoot.
+RewriteBase /
+
+# RewriteCond statements must all be true for any following
+#RewriteRule statements to run. All rules run, until a [L] (last) or a
+#rule is false.
+
+# REQUEST_URI must not contain a ~ i.e. must not be like http://example.com/~mst3k/
+RewriteCond %{REQUEST_URI} !^/~.*$
+
+# DOCUMENT_ROOT is matched against the regular expression
+# /home/(.*)/public_html, and (.*) is captured in variable %1. 
+# This captures the userid, in our examples mst3k. This is generalized
+# to work without changes for the different users. You should not need
+# to edit this code for different users. You could leave out this line
+# and hard code the user id in the next line.
+RewriteCond %{DOCUMENT_ROOT} \/home\/(.*)\/public_html
+
+# The URL minus the domain name is matched by ^(.*)$, and the
+# expression is captured in $1. Apache will internally rewrite the file
+# found using %1 from above and $1. For example, if example.com is
+# virtually hosted from directory /home/mst3k/ then
+# http://example.com/foo/test.pl
+# becomes /~mst3k/foo/test.pl
+# This is the crux of the workaround: the rewritten URI contains a
+# ~userid and therefore Apache will suexec.
+RewriteRule ^(.*)$ /~%1/$1
+
+
+
+
+Test script
+-----------
+
+You can test this with the following 4 line script. Save this as a
+file such as /home/mst3k/public_html/test_id.pl. 
+
+#!/usr/bin/perl
+use strict;
+my $id_info = `/usr/bin/id`;
+print "Content-type: text/html\n\n<html><body>$id_info</body></html>\n";
+
+
+
+Run a command to get the file permissions right:
+chown +x,go-rw test_id.pl
+
+I assume you are running CGI scripts, or there's little reason to need
+suexec, but nonetheless httpd.conf or .htaccess needs:
+
+AddHandler cgi-script .cgi .pl
+
+Scripts won't run if any of the directories containing the script are
+group writable.
+
+When the rewrite works, these two URLs give identical results:
+
+http://example.com/~mst3k/test_id.pl
+http://example.com/test_id.pl
+
+Simply, a web page like this:
+
+uid=501(mst3k) gid=501(mst3k) groups=48(apache),501(mst3k) 
+
+
+Without the rewrite (or if it isn't working), only the ~mst3k script
+will be userid mst3k. Without suexec, all the userids/group ids will
+be apache.
+
+A more extensive diagnostic is my envquery.pl script. You can download
+here:
+
+http://defindit.com/readme_files/envquery.tar
+
+(packed in a tar file so virus scanners don't get upset).
+
+
+
+Debugging mod_rewrite and pattern matching
+------------------------------------------
+
+# Use something like this to debug pattern matching
+#RewriteRule ^(.*)$ /~mst3k/index.html?$1 [R]
+
+
+
+
+Mismatch with directory or program
+----------------------------------
+
+Suexec permission and ownership errors can be confusing. In order to
+be as secure as possible, suexec is very careful about file
+permissions and ownership. In the example below, the CGI script
+index.pl is running under suexec as user mst3k. The normal Linux
+convention is that a user's uid (numeric user id) and gid (numeric
+group id) are both the same, and are unique to that user. In the case
+below, the older convention was partially used where mst3k's primary
+gid was the larger group "users", with gid 100. In this instance, this
+mismatch resulted from a change in account creation during an
+operating system upgrade.
+
+User mst3k was created "wrong". The files were restored from a backup
+and still had the original gid 100. 
+
+In this case, we want to follow the older convention and keep the
+directories and files in group users, 100. Fix the problem by
+modifying user mst3k to have the primary group users which is gid 100.
+
+There is a second issue here: the new group created for mst3k is gid
+502, instead of being the same as the uid (54089). This wasn't
+fixed. Under the old system, users do not have their own group. Since
+mst3k's primary group is now "users", the mst3k group doesn't matter.
+
+
+
+# error message in /var/log/httpd/suexec.log
+[2009-08-06 09:43:43]: uid: (54089/mst3k) gid: (502/mst3k) cmd: index.pl
+[2009-08-06 09:43:43]: target uid/gid (54089/502) mismatch with directory (54089/100) or program (54089/100)
+
+# After the fix, we see the normal message when suexec is satisfied:
+[2009-08-06 09:49:13]: uid: (54089/mst3k) gid: (100/users) cmd: index.pl
+
+# Dir and file group is users, 100
+# The -n means "show user and group as uid and gid numeric values".
+
+[anubis ~]$ ls -ldn .
+drwx--x--x 28 54089 100 4096 2009-08-05 16:48 .
+[anubis ~]$
+
+# primary group is mst3k, 502 which is a mis-match with the dir/file group id.
+# The CGI script index.pl is 54089, 100 and therefore mst3k's account
+# must match.
+
+[anubis CGKB]$ id                               
+uid=54089(mst3k) gid=502(mst3k) groups=48(apache),100(users),502(mst3k),56410(cowboy)
+[anubis CGKB]$
+
+# Change primary group to users, 100. Make the change via webmin or
+# the usermod command. This is correct:
+
+[anubis ~]$ id
+uid=54089(mst3k) gid=100(users) groups=48(apache),100(users),56410(cowboy)
+[anubis ~]$
+
+
+
+Additional notes on suexec security
+-----------------------------------
+
+As far as I know, your system is more secure if every user has a
+separate group. Suexec is unhappy if CGI scripts are group
+writeable. A group-write CGI script could be modified by a hostile
+user that is not the script owner.
+
+Using the public_html document root, suexec, and virtual hosting,
+every script has one and only one owner/author. Users with valid
+logins can't accidentally (or maliciously) corrupt other users scripts
+and files. 
+
+It is necessary when using virtual hosting to use a Rewrite rule to
+change script calls to ~userid calls so that the Apache public_html
+suexec will su to the user. If you don't use the Rewrite rule, Apache
+will not suexec virtually hosted CGI scripts, which descreases the
+security, and may cause problems such as the CGI scripts not having
+permissions to write files.
+
+See the section about a workaround with embedded comments.
+
+The Rewrite rule may seem like an extra step, but worse problems
+(security problems) arise if you do your virtual hosting out of the
+main document root (/var/www/html). The web page above is very
+verbose, but there are only three lines to implement the Rewrite.
+
+I prefer to create users with unique uid and gid. Only on development
+servers where logins are strictly limited to trusted users do I use
+shared groups (even then, I only do it so I don't have to argue with
+the other developers). Even in a development environment, there is no
+need for a shared group. The usual justification is to allow any
+developer to write to a test/QA or staging area. Rather than allowing
+all developers to write into some shared directory, it is better to
+have a release manager (role, or actual person). For the past couple
+of years I've had a major product that has its own account. This turns
+out to have fewer issues than multiple users in a group, and the
+production code having group-write permissions.

@@ -1,0 +1,250 @@
+date: Feb  2  2009
+keywords:pbs,portable,batch,system,qsub,qstat,pbsnodes,cluster,server,queue,15007
+description:Configuration suggestions and diagnosing problems with the Portable Batch System PBS (e.g. OpenPBS).
+title:PBS setup configuration debugging
+
+Table of contents
+-----------------
+Mount point suggestion
+Example PBS qsub command (see "Example details" below)
+Hardware and operating system
+Problem description
+How to diagnose "No permissions" and/or "cannot connect to host"
+How to fix permissions/connect error
+How to diagnose the problem of jobs hanging in the E state
+Example details
+
+
+
+Mount point suggestion
+----------------------
+
+PBS copies the executable it was told to run into a PBS spool
+directory on the worker node. This creates several problems. If your
+code makes assumptions about libraries and config files that exist in
+the same directory as the executable, then PBS will break your code.
+
+PBS supplies an environment variable PBS_O_WORKDIR, however, I suggest
+that you create your on variable for your working and/or binary
+directory. If your mount points have different names between the head
+node and the cluster nodes (and there are good reasons for a differences
+to exist), then PBS_O_WORKDIR will be "wrong" on the worker nodes.
+
+For example, I cd /m0/mst3k/gss/bin on the head node and launch a
+job. It turns out that /bin/pwd will tell us that the real path I'm
+using is /Volumes/xsadminHD1/m0/mst3k/gss/bin. However, the same cd
+/m0/mst3k/gss/bin on the worker nodes takes us to a different
+directory: /private/automount/m0/mst3k/gss/bin. The workaround is to
+set your own private path environment variable, and standardize its
+use throughout your code. Vela (my job queuing system) sets vela_path
+to /m0/mst3k/gss/bin which is identical on both head and worker nodes.
+
+Ideally, you would set up your cluster with identical mount points for
+the head node and worker nodes. That could be an interesting
+challenge.
+
+
+
+Example PBS qsub command (see "Example details" below)
+------------------------------------------------------
+
+qsub -p -100 -c n -k eo -m n -r n -e /home/mst3k -o /home/mst3k
+
+
+Hardware and operating system
+-----------------------------
+
+We found this problem on our Apple XServe cluster. The OSX software
+was reasonably up to date. We are running PBS Pro, under an
+educational license. The problems described here appear to be
+configuration issues and not bugs. I'm guessing that these same issues
+apply to Linux clusters running Open PBS as well as PBS Pro.
+
+
+Problem description
+-------------------
+
+PBS requires that the (head node) can send email to users on the
+system, and PBS requires that worker nodes can rcp files to the head
+node. There are workarounds for both of these requirements. I also
+include some techniques to diagnose problems with PBS.
+
+We had two main problems:
+1) "No permission" error messages about PBS facilities being unavailable.
+2) Jobs stayed in the E state for around 10 minutes.
+
+If you get errors like the following from PBS when the system has
+active jobs but not when the queue is empty (and has been empty long
+enough for all the offending processes to time out), then you may have
+an overloaded head node.
+
+pbs_iff: cannot connect to host
+No Permission.
+qstat: cannot connect to server zeus (errno=15007)
+
+This error was intermittent. Sometimes we could go for several minutes
+with no error, and other times it would be several minutes when PBS
+was unavailable. Apparently the cause was the head node being
+overloaded trying to send undeliverable email. With a properly running
+system, no matter how busy the work nodes are, load on the head node
+will be reasonable
+
+This is typical proper load on our Apple XServe OSX dual G5 head node
+with 34 worker nodes all busy: 
+
+[mst3k@zeus mst3k]$ uptime
+11:38  up 4 days,  3:48, 9 users, load averages: 0.93 1.01 0.98
+[mst3k@zeus mst3k]$   
+
+In this case, worker nodes were running BLAST searches which are
+pretty much cpu and memory bound. A fairly large file (250Mb) is
+initially read into memory, and output is small. We keep the 250Mb
+file on local disk for each node so that we don't bog down the nfs
+server. The head node is not the nfs server for our cluster.
+
+
+How to diagnose "No permissions" and/or "cannot connect to host"
+-----------------------------------------------------------
+
+Remember, this is a server load problem caused by too many email
+processes with that can't complete because the email is
+undeliverable. In our instance /var/log/mail.log (on Linux this file
+is called /var/log/maillog) was a very large file (the file was 1Gb
+where it is normally 1Mb), and probably contained loads of error
+messages (I didn't see it's contents.)
+
+Server load as seen in "update" or "top" will be very high (>2, or
+very low cpu percent idle).
+
+top -o cpu
+
+ps aux
+
+You will see many processes related to email. These may be called
+"bounce", or contain email-related substrings. I remember seeing
+processes with "imap" in them. I seem to recall many processes owned
+by "postfix".
+
+
+How to fix permissions/connect error
+------------------------------------
+
+from /etc/postfix/aliases
+
+# Put your local aliases here.
+adm:            /dev/null
+ja4n:           /dev/null
+mst3k:          /m1/mst3k.zeus.mail
+jaw2d:          /dev/null
+
+
+You need to run the command newaliases after making changes to the
+aliases file. 
+
+The file above gets postfix to put all of mst3k's email into the file
+/m1/mst3k.zeus.mail. 
+
+
+How to diagnose the problem of jobs hanging in the E state
+----------------------------------------------------------
+
+If your jobs remain in the E state after completion, then you may have
+the rcp problem. You could get rcp working between the worker nodes
+and the head node. Or you could get PBS to just leave the output files
+on the worker nodes. Since our worker nodes all have at least one nfs
+mounted, shared file system, I chose to keep the files "local". In our
+case, the local directory used is nfs mounted, so we don't need rcp. I
+suspect that nfs is more efficient than rcp. Besides, rcp and the
+related rsh utilities seem ancient and weird. A sysadmin who has a
+.rhosts file did not experience this problem, so if you want to use
+rcp, you probably only need a good .rhosts file (The .rhosts file
+either needs to be on a nfs share for each node, or the .rhosts needs
+to be copied to each node.)
+
+If your jobs are stuck in the E state, you'll see qstat output like this:
+      
+[mst3k@zeus mst3k]$ qstat
+Job id           Name             User             Time Use S Queue
+---------------- ---------------- ----------------  -------- - -----
+171266.zeus       pbs_run.pl       mst3k            00:10:26 E workq
+171269.zeus       pbs_run.pl       mst3k            00:09:19 E workq
+171274.zeus       pbs_run.pl       mst3k            00:10:34 E workq
+171276.zeus       pbs_run.pl       mst3k            00:09:23 E workq
+171277.zeus       pbs_run.pl       mst3k            00:09:37 E workq
+171278.zeus       pbs_run.pl       mst3k            00:08:33 E workq
+
+If you get qstat details for a node, you can discover the node
+number. Then you can ssh to that node, and look at running
+processes. Typically, you'll see a pbs_rcp process that stays in the
+process list for a long time (10 minutes). Also, you will be unable to
+rcp or rsh from the worker nodes to the head node. There will also be
+"operation timed out" messages in PBS's rcperr file(s) on the worker
+node.
+
+qstat -f 171278.zeus
+
+In the output of the qstat command , look for this line:
+    exec_host = xs04/0
+
+ssh xs04
+ps aux | grep rcp
+
+If you see an pbs_rcp process, and the process stays in the list, this
+indicates a potential problem.
+
+Lastly, if PBS is logging problems in the rcperr file, that's a sure
+sign of trouble.
+
+[mst3k@xs23 mst3k]$ ls -alt /var/spool/PBS/spool/rcperr*
+total 64
+-rw-r--r--   1 mst3k   wheel   26 13 Apr 10:14 rcperr.4709
+drwxrwxrwt  18 root    wheel  612 13 Apr 10:10 .
+[mst3k@xs23 mst3k]$ cat /var/spool/PBS/spool/rcperr.4709
+zeus: Operation timed out
+[mst3k@xs23 mst3k]$
+
+
+
+Example details
+---------------
+
+The key to dealing with rcp issues is to stop PBS from trying to use
+rcp, or fix the system configuration so that rcp works. There isn't a
+PBS setting to disable rcp, so you have to tell PBS to keep the error
+and output files on each host, and you have to give PBS a valid path
+for those files. As far as I can tell, if you do not do both things,
+PBS will still try to use rcp.
+
+Keep both files on execution host.
+-k eo
+
+Paths for stderr and stdout output
+-e stderr_path
+-o stdout_path
+
+For example:
+-k eo -e /home/mst3k -o /home/mst3k
+
+These were a nice idea, but didn't help solve our PBS performance issues.
+Don't checkpoint.
+-c n
+Don't send mail.
+-m n
+Not rerunable (seems like less work for PBS)
+-r n
+
+
+If you are using nfs mounted (or otherwise network shared) home
+directories, and if you are therefore not using rcp, then you will
+want to set -e and -o.
+
+This is my suggested command line:
+
+/usr/pbs/bin/qsub -p -100 -c n -k eo -m n -r n -e /home/mst3k -o /home/mst3k 
+
+
+Use your preference for -p prioritiy. Negative numbers are lower
+priority. The default is zero.
+
+
+

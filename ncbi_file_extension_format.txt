@@ -1,0 +1,52 @@
+date: Sep  3  2009
+keywords:ncbi,nlm,nih,blast,format,file,extension,type,gene,protein,genome,table,report,download
+description:A brief description of file extensions and file formats found at the National Center for Biotechnology Information
+title:NCBI file extensions
+
+
+I can't find this info anywhere on the National Center for
+Biotechnology Information (NCBI) web site, but their help desk people
+cheerfully filled me in on each of the file formats associated with
+the various file name extensions.
+
+If you find more file formats at NCBI, please email me and I'll
+happily update this list. Please use my contact form:
+
+http://laudeman.com/tom_mail/wmail.pl
+
+I'm still a bit unclear on a few of those file types such as "protein
+table" or a "summary report". I also suspect that these are not
+canonical names. You may find that these file types go by other
+descriptions. Computer people are not slaves to convention, and
+biologists more so.
+
+For more details, contact the NCBI help desk:
+
+info@ncbi.nlm.nih.gov
+
+
+.asn	genome record in asn.1 format 
+.faa	protein sequences in fasta format, text file
+.ffn	protein coding portions of the genome segments
+.fna	genome fasta sequence
+.frn	rna coding portions of the genome segments
+.gbk	genome in genbank file format 
+.gff	genome features
+.ptt	protein table
+.rnt	rna table
+.rpt	summary report
+.val	binary file (genome project?)
+
+Other extensions, and my understanding of their meaning:
+
+.gb     Genbank?
+.gpff   Genbank protein
+
+
+Other common extensions you may see at NCBI:
+
+.tar    TAR archive, a common Linux archive file format. 
+.gz     gzip, a compressed format. Not the same as .zip
+.tar.gz gzipped tar, usually a tar file that was subsequently gzipped
+.tgz    gzipped tar, usually gzipped by the tar application
+.zip    Zip

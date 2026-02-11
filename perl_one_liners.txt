@@ -1,0 +1,189 @@
+date: Oct 13  2008
+title:Perl one liners
+description:Perl one line scripts run from the command line or used in piped commands in the shell.
+keywords:perl,regexp,regex,regular,expression,sed,awk,bash,sh
+
+
+See man perlrun.
+
+
+Necessary command line switches
+-------------------------------
+
+-e commandline is execute commandline as Perl
+-n is loop through the input, no printing of the input lines
+-p is loop through the input, print the input lines as well as any ouput.
+
+Since -e has an argument commandline, you cannot say
+-ep commandline
+
+That would be interpreted as
+-e -p commandline
+
+and since -p has no argument, the commandline would be ignored. I suggest one of the following forms:
+
+perl -ne commandline
+perl -pe commandline
+
+
+
+Example 0.1
+-----------
+
+Simply pring "hello world\n". Note that the Perl command is surrounded
+by single quote characters (aka tick). If you need to use a single
+tick inside the Perl command, you might try using the octal \047.
+
+perl -e 'print "hello world\n"';
+
+
+
+Example 0.2
+-----------
+
+Print the name of every file in the current directory. The actual act
+of printing here is clearly redundant, but it gives a nice, simple
+example of getting input from stdin, and printing it.
+
+ls  | perl -ne 'chomp; print "$_\n"' 
+
+ls  | perl -ne 'print "$_"'
+
+
+
+Example 1.0
+-----------
+
+Use "find" to exec the "file" command and use a perl one line script
+to print the file name which chmod uses (via the backticked "find"
+command) to make the file permissions +x. Note that "find" is inside
+backticks. The Perl oneliner is in a single quoted (aka tick) string
+which contains a print statement with a double quoted string.
+
+chmod -v +x `find ./ -exec file {} \; | grep executable | perl -ne 'm/^(.*?):/; print "$1\n" ' `
+
+
+
+Example 1.1
+-----------
+
+The "grep executable" could be moved into the Perl regex as well, but
+then the regex must be wrapped in a if statement to prevent $1 from
+printing for every line of input. The regex is slightly more complex
+than the example above. Remember, $1 retains its value between
+iterations.
+
+chmod -v +x `find ./ -exec file {} \; | perl -ne 'if (m/^(.*?):.*executable/){ print "$1\n"; } '`
+
+
+Example 1.2
+-----------
+
+There is also the tr command (not Perl, but sometimes handy):
+
+Here are rot13 and un-rot13 examples:
+tr A-Za-z N-ZA-Mn-za-m < good.txt > gibberish.txt
+tr N-ZA-Mn-za-m A-Za-z  < gibberish.txt > good.txt
+
+
+Example 1.3
+-----------
+
+Oddly, the command below works, due to the DWIMish nature of Perl (DWIM = Do What I
+Mean). Or due to the fact that every line of the file c040721c03.txt
+has one and only one match.
+
+cat txt_files/c040721c03.txt  | perl -ne 'm/\s+([A-Z\*\?]+)\s+/; print "$1\n" '
+
+This is probably robust.
+
+cat txt_files/c040721c03.txt  | perl -ne 'if (m/\t+([A-Z\*\?]+)\s+/s) { print ".$1.\n"} '  | less
+
+
+The variante below is interesting since it will search for "peptide-like" strings multiple times per line. 
+It finds all kinds of garbage.
+
+cat txt_files/c040721c03.txt  | perl -ne 'while (m/\s+([A-Z\*\?]+)\s+/g) { print ".$1.\n"} '  | less
+
+
+
+Example 1.4
+-----------
+
+# Use the e switch at the end of the regex to eval the right side of the regex.
+# The eval is necessary when using a Perl function as below
+cat oldfile | perl -pe 's/(\d+)_/sprintf("%2.2d_",$1)/e' > newfile
+
+
+
+Example 1.5
+-----------
+
+# A simple example that changes /session_lib to /geoss_session_lib throughout a file.
+# This is a double bash command, and the second half renames the .new file.
+# To make this work over multiple files I created a text file of shell commands
+# using Emacs macros. It's crude but simpler than trying to get some combination of "find" and "xargs"
+# to do it in a single bash command. I use "find" to generate the original list of files
+# that I modify with the Emacs macro. 
+
+cat ./bin/geoss_adduser.pl | perl -pe 's/\/session_lib/\/geoss_session_lib/' > ./bin/geoss_adduser.pl.new; mv ./bin/geoss_adduser.pl.new ./bin/geoss_adduser.pl
+
+
+
+Example 1.6
+-----------
+
+# A related utility is xargs.
+egrep -ho "http://.*a.jpg" file*.html | xargs wget
+
+
+
+Example 1.7 (and variants)
+--------------------------
+
+# test regex 04-01* to 02-22* before calling with rename()
+find -exec perl -e '$new=$ARGV[0]; $new =~ s/.\/04\-01(.*)/02\-22$1/; print "$new\n";' {} \;
+
+
+# Another test, and alternate implementation
+find -exec perl -e '$ARGV[0] =~ m/.\/04\-01(.*)/; print "02\-22$1\n"; ' {} \;
+
+
+# regex rename 02-22* 04-01* and visa-versa.
+find -exec perl -e '$new=$ARGV[0]; $new =~ s/.\/02\-22(.*)/04\-01$1/; rename($ARGV[0],$new);' {} \;
+
+
+find -exec perl -e '$new=$ARGV[0]; $new =~ s/.\/04\-01(.*)/02\-22$1/; rename($ARGV[0],$new);' {} \;
+
+
+# regex rename 02-22* to "04-01*"
+find -exec perl -e '$new=$ARGV[0]; $new =~ s/.\/02\-22(.*)/\"04\-01$1\"/; rename($ARGV[0],$new);' {} \;
+
+
+# regex rename "*" to *
+find -exec perl -e '$new=$ARGV[0]; $new =~ s/\"//g; rename($ARGV[0],$new);' {} \;
+
+
+
+Example 2.0
+------------
+
+Jim Roberts contributed this example using the PostgreSQL command
+line. For a given table in the database, it creates a list of tmpl_var
+comment tags for use by Perl's HTML::Template. Assume that example.edu
+has a Postgres server, a database called "bioinfo", and bioinfo has a
+table called "bio_sequence". When running this example, if you don't
+have a .pgpass file, you'll have to enter the db password.
+
+This is "smart guy" Perl using several tricks and short
+cuts. Personally, while I can read this kind of code, even as an
+experienced Perl programmer I find it somewhat hard to read. If you
+are not experienced in Perl, this may be hard to interpret. (As an
+aside, I would encourage everyone to avoid the Perl predefined
+variables as much as possible in the interest of legibility and bug
+free code. We should probably also avoid tricks like arrays assigned
+in a scalar context. Docs about the predefined variables can be found
+in man perlvar.)
+
+echo '\d bio_sequence' | psql -h example.edu  -Ubioinfo | perl -ne 'next if m/Column/; $nos= $_  =~ tr/\|/\|/; if ($nos==2) { m/(.*?)\|/; $c=$1; $c =~ s/ //g; print "<!-- tmpl_var name=$c -->\n"; }' >tmpl_names
+

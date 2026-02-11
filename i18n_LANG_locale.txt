@@ -1,0 +1,16 @@
+date: Jun 30  2004
+title:Localization and internationalization settings for sorting and collating.
+
+/etc/sysconfig/i18n:
+#LANG="en_US.UTF-8"
+#SUPPORTED="en_US.UTF-8:en_US:en"
+#SYSFONT="latarcyrheb-sun16"
+
+# recommended settings
+LANG="en_US"
+SUPPORTED="en_US:en"
+SYSFONT="lat0-sun16"
+SYSFONTACM="iso01"
+LC_ALL="C"
+LC_COLLATE="C"
+

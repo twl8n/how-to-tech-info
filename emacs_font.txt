@@ -1,0 +1,82 @@
+date: May 18  2007
+keywords:emacs,font,xdefaults,xwindows,x-windows,xterm
+description:Getting emacs to start faster with a different font as well as setting and saving a Mule font.
+title:Emacs and .Xdefaults, Mule set, Mule save
+
+Table of contents
+-----------------
+Mule set and save font
+.Xdefaults and Emacs
+
+
+Mule set and save font
+----------------------
+
+Setting a font via the menu is easy (assuming that you are running the
+X-windows version of Emacs). After using Emacs for nearly 15 years I
+still have not been able to figure out how to use the menus in
+non-windowing -nw mode.
+
+In windowing mode to go Options, mouse over Mule (don't click), slide
+over to Set Font/Fontset, and click. A menu pops up. Mouse-over your
+choice (which will expand), and finally click on your font or fontset
+of choice. The user interface of Emacs menus is very odd.
+
+Now you are faced with a problem: how do you save the settings for a
+future session? The process takes several steps. 
+
+Switch to the *scratch* buffer or open a new file and switch the mode
+to lisp-interaction-mode (M-x lisp-interaction-mode). The buffer must
+be in Lisp interaction mode for the C-j (control-j) trick to work.
+
+Enter this (assoc ) statement below, and at the end of the line enter
+a C-j. In list interaction mode if you enter a control-j at the end of
+a line, Emacs will interpret that line.
+
+(assoc 'font (frame-parameters)) 
+(font . "-Adobe-Courier-Medium-R-Normal--14-140-75-75-M-90-ISO8859-1")
+
+We see that I changed my font to Courier 14 point. Now we add a two
+Lisp statements to your .emacs file (or .xemacs/init.el if you are
+using both xemacs and real Emacs).
+
+In the second statement note that the line you got from (assoc ) is
+quoted and followed by the closing right paren of the statement.
+
+
+(assq-delete-all 'font default-frame-alist)
+
+(add-to-list
+  'default-frame-alist
+  '(font  . "-Adobe-Courier-Medium-R-Normal--14-140-75-75-M-90-ISO8859-1"))
+
+
+This seems to work in both GNU Emacs (real Emacs) and Xemacs.
+
+Note that if you are clever with an application such as xfontsel, you
+could determine what fonts were available on your system and create
+the (font ) statement above. 
+
+
+.Xdefaults and Emacs
+--------------------
+
+You must restart your session after making changes to .Xdefaults. With
+KDE and Gnome you can probably just log out (since KDM and GDM seem to
+restart the X server).
+
+
+Add this line to your .Xdefaults:
+
+*Emacs.font: -adobe-courier-medium-r-normal-*-14-100-100-100-*-90-iso8859-1
+
+You may have to run a font browser like xfontsel to figure out which
+fonts you've got and how to specify them.  Some fonts wouldn't load on
+my machine, even though xfontsel claimed that they were present.
+
+Other Xdefaults stuff:
+
+xterm*VT100.font: 9x15
+XTerm*saveLines: 5500
+xterm*VT100.geometry: 110x46+0+0
+xterm*cursorBlink: on

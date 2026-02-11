@@ -1,0 +1,65 @@
+date: Aug  7  2009
+keywords:find,tar,pipe,stdin,stdout,redirect,io,touch,shell,path,file,
+title:Exmaples and tricks using the Linux (Unix, OSX) "find" command.
+Description: Arbitrary dates and other tricks with the Linux find command.
+
+# use -T - to get tar to read file list from stdin find will get all
+# the files in the current directory, except emacs backups "*~" and a
+# presumably confidential file .thepass.
+
+find ./ -maxdepth 1 -type f ! -name "*~" ! -name ".thepass" | /bin/tar -cvf ./backup/home.tar -T -
+
+# Same command, but simpler. 
+
+find ./ -maxdepth 1 -type f  | /bin/tar -cvf ./backup/pg_home.tar -T -
+
+# List files in reverse date order. With this we discover that
+# we want to delete x.txt and all older files.
+ls -alt
+
+# Run find in listing mode to verify what we're going to delete.
+find /var/lib/tripwire/report/ ! -cnewer x.txt -ls
+
+# Delete file x.txt and all files older.
+find /var/lib/tripwire/report/ ! -cnewer x.txt -exec /bin/rm -i {} \;
+
+
+The Apple OSX "touch" command is doesn't support the --date extension. 
+
+# create tmp.txt or set it's last modification date using touch. 
+# This example sets it's time of last mod to 9:15 am, today.
+
+touch --date="09:15:00" tmp.txt
+find ./ -cnewer tmp.txt
+
+
+# tar up files newer than /etc/rc.local
+
+tar -zcvf ~/2004-11-01_tull_etc.tar.gz --exclude /etc/shadow `find /etc -newer '/etc/rc.local' -type f`
+
+
+# Remove write privs, depth first. Can't use chmod -R since that starts with the 
+# parent directory, and when it isn't writable, files and subdirs can't chmod.
+
+find ./cmdev_save -depth -exec chmod a-w {} \;
+
+
+# Tar up things in /etc that have changed, more or less since install, and leave out /etc/shadow.
+
+tar -zcvf ~/2004-11-01_tull_etc.tar.gz --exclude /etc/shadow `find /etc -newer '/etc/rc.local' -type f`
+
+
+egrep -ho "http://.*a.jpg" file*.html | xargs wget
+
+
+# This should delete files older than 7 days, and print the name of each file it deletes.
+find ./ -ctime +7 -name "*.zip" -exec rm -f {} \; -ls
+
+
+# 
+# If you want to be prompted before it deletes a file:
+find ./ -ctime +7 -name "*.zip" -exec rm -i {} \; -ls
+
+#
+# If you want to put this in cron, then send the output to a log file:
+find ./ -ctime +7 -name "*.zip" -exec rm -f {} \; -ls > /home/mst3k/clean_zip.log 2>&1

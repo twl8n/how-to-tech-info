@@ -1,0 +1,115 @@
+date: May 15  2007
+title:Emacs configuration and remote file access examples
+keywords:.emacs,config,example,auto,automatic,default,set,setting,init,custom,init.el,custom.el,xemacs,tutorial
+description:Hints on setting up your emacs configuration, and remote file access.
+
+
+Edit remote files
+-----------------
+
+Emacs includes a package called Tramp. Tramp enables you to edit files
+on a remote machine as though the files were local. For my
+instructions below ssh (sshd) is required on the remote machine. Tramp
+automatically handles copying the file back and forth. This has the
+advantage that your editing is all local and very fast. The only
+delays happen during saving.
+
+You enable Tramp by adding these two lines to your .emacs file, or by
+evaluating them from inside Emacs:
+
+(setq tramp-syntax 'url)
+(require 'tramp)
+
+To evaluate them, type or paste them into the Lisp eval in the
+minibuffer. Run the eval-expression function:
+ESC :
+(M-: press escape, then type a colon, also M-x eval-expression) 
+
+After entering one line, press return. Repeat for the second line.
+
+In tramp mode you can now open files of the url format:
+
+/protocol:hostname:/path/file
+
+The : is required after protocol and the hostname. I suggest you use
+ssh:, although scp: and sftp: probably also work. 
+
+/ssh:example.com:/home/mst3k/public_html/index.html
+
+When you open the first file, tramp does all kinds of magical things
+(running a shell, setting env vars, running a Perl script, etc.)
+
+
+
+Personalize and Automate your Emacs configuration
+-------------------------------------------------
+
+I suggest that you download my .emacs file. You can probably find it at:
+
+http://defindit.com/readme_files/dot_emacs.txt
+
+On your machine give it one of the following names (where mst3k is a
+placeholder for your userid).  
+
+/home/mst3k/.emacs
+/home/mst3k/.xemacs/init.el
+C:/_emacs
+
+If you want to change a key binding, see the define-key section.
+
+To view your current key bindings, use the emacs functions
+
+describe-bindings
+describe-key
+describe-key-briefly
+
+(M = "meta" = escape key. M-x = press and release the "Esc"
+key, then press the "x" key. C = control = the Ctrl key. C-x = press
+and hold the Ctrl key, and press the x key at the same time. If you do
+M-x the text "M-x " will appear in the "mini-buffer" at the bottom of
+the emacs screen. Do not press Enter (return) after M-x. After
+entering a command you must press the Enter (return) key for that
+command to run. Use C-g to cancel.)
+
+See all current key bindings:
+
+M-x
+describe-bindings
+
+See what is bound to some key (C-d in this example). Emacs splits the
+screen and show the key info in the second window.
+
+M-x
+describe-key
+C-d
+
+
+;; My favorite indent style for Perl is C++. This requires calling
+;; the cperl-set-style function, but that isn't loaded until cperl-mode is loaded
+;; Therefore you must use the add-hook which adds this my new function
+;; twl-cperl-setup to the cperl-mode-hook.
+
+;; This only applies to newer versions of emacs. Older versions perl-mode 
+;; had this behavior by default, but new versions have replaced perl-mode
+;; with cperl-mode. The code below seems to have no effect on older
+;; versions of emacs.
+
+(defun twl-cperl-setup ()
+  (cperl-set-style "C++"))
+
+(add-hook 'cperl-mode-hook 'twl-cperl-setup)
+
+
+
+
+xemacs notes
+------------
+
+(if (eq 'tty (device-type))
+    (set-device-class nil 'color))
+
+
+(global-set-key "\C-cd" 'double-word)
+
+
+(global-set-key "\C-z" 'up-one)

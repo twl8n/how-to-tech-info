@@ -1,0 +1,42 @@
+date: Jul 11  2006
+keywords:tar,backup,back,up,cd,dvd,split,cat,exclude,example,volume,multiple
+description:Examples using tar to create multiple smallers files (volumes).
+title:Tar (tape archive) examples
+
+# Create a number of 1 megabyte files that together are
+# a tar archive. You might do a similar operation using
+# 650Mb when saving the individual segments to CD, or 3.5Gb 
+# when saving to DVD. Split does not understand 1M as 1000000
+# so you have to use all the zeroes.
+# Note that the file names created by default by split are compatible
+# with using cat with a wildcard (e.g. the order of the files
+# being cat'd back together will be correct).
+
+[mst3k@zeus tmp]$ tar -cvf - error.txt  | split -b 1000000
+error.txt
+[mst3k@zeus tmp]$ ls -l
+total 15732
+-rw-r-----   1 mst3k  100  4022303 Jul 11 11:06 error.txt
+-rw-r--r--   1 mst3k  100  1000000 Jul 11 11:06 xaa
+-rw-r--r--   1 mst3k  100  1000000 Jul 11 11:06 xab
+-rw-r--r--   1 mst3k  100  1000000 Jul 11 11:06 xac
+-rw-r--r--   1 mst3k  100  1000000 Jul 11 11:06 xad
+-rw-r--r--   1 mst3k  100    24320 Jul 11 11:06 xae
+[mst3k@zeus tmp]$ cat x* > test.tar
+[mst3k@zeus tmp]$ tar -tvf test.tar
+-rw-r----- mst3k/100   4022303 2006-07-11 11:06:31 error.txt
+[mst3k@zeus tmp]$
+
+
+# Make an exclude file list, and get tar to use it.
+
+find ./cellmig/data_encrypted > exc.txt
+
+tar -cvf 2004-08-25_cellmig.tar ./cellmig -X exc.txt
+
+
+# Just to the excluded directories on the tar command line.
+
+tar -czvf backup.tgz  --exclude ./a10 --exclude ./music --exclude ./.mozilla --exclude ./cxoffice ./
+
+tar -cvf mst3k.tar --exclude /home/mst3k/office52 /home/mst3k

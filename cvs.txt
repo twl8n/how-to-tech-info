@@ -1,0 +1,366 @@
+date: Aug 13  2008
+keywords:cvs,repository,admin,init,CVSEDITOR,CVS_RSH,ssh,commit,CVSROOT
+description:Setting up and using a CVS version control repository.
+title:CVS setup and configuration
+
+
+
+Table of contents
+-----------------
+Create a new repository (instance)
+Set your environment variables
+Create a new project
+New project notes
+Avoid wrong path mistake
+Tag, export, and make a tar file
+Keyword substitution and identification markers
+Keywords and merge
+Notes and comments
+
+
+
+
+Create a new repository (instance)
+----------------------------------
+
+# Only run the init command one time to build a CVS instance.
+# Don't use the init command unless you do not have a cvs root directory at all.
+# In this example we have a directory "p5" off / (root). From a sysadmin
+# perspective, /p5 might be a large volume dedicated to tasks like cvs.
+
+ssh mst3k:cvs.example.com
+su -l root
+cvs -d /p5/cvs init
+
+
+
+
+Set your environment variables
+------------------------------
+
+# Back on your development machine, you need to set your CVS env vars first. 
+# I recommend NOT setting CVSROOT in the environment, and 
+# using the -d arg with an explicit CVSROOT the first time 
+# you check out a project. You will only need the -d the first time.
+# After that, CVS saves it in CVS/Root in the local project directory.
+# CVS repository path is not / terminated as usual
+ 
+cat ~/.bashrc
+...
+export CVSEDITOR=emacs
+export CVS_RSH=ssh
+...
+
+
+
+
+Create a new project
+--------------------
+
+Here are the steps in creating a new project from an existing
+directory. First the brief version with only a few comments. 
+Assume this is your environment:
+userid: mst3k
+cvs host: cvs.example.com
+cvs path: /p5/cvs
+your project directory: /home/mst3k/public_html/ms_results
+your config files: .app_config, .htaccess
+today's date: April 25, 2008
+
+cd ~/
+
+mkdir proj_temp
+
+cd /home/mst3k/public_html
+
+tar -cvf apr-25-2008_ms_results.tar ./ms_results
+
+cd ms_results
+
+# move any config files to ~/proj_temp
+mv -v .* ~/proj_temp
+
+# Clean up backups, temporary files, and trial scripts.
+rm -i *~ 
+
+rm -i .#*
+
+rm -i \#*
+
+rm -i tmp.*
+
+rm -i try.*
+
+cvs -d:ext:mst3k@cvs.example.com:/p5/cvs import -m "Initial import." ms_results vendor start
+
+cd ../
+
+mv ms_results ms_results.original
+
+cvs -d:ext:mst3k@cvs.example.com:/p5/cvs co ms_results
+
+# Move dot files from ~/proj_temp back into the project directory. Do
+# not add these files to the CVS repository. Use the interesting glob 
+# to avoid warnings about not being able to move . and ..
+
+mv -v ~/proj_temp/.[^.]* .
+
+
+Below are longer, annotated notes about creating a new project.
+
+# Import the new project, aka create a CVS project, aka create the repository.
+# cd into the main directory where are importing 
+#
+# Note!
+# clean up any files or directories you do not want in the CVS repository!!
+# Tar up the directory, just in case.
+# Here we are using ms_results as an example
+
+cd /home/mst3k/public_html
+tar -cvf 2003-09-09_ms_results.tar ./ms_results
+
+
+
+
+New project notes
+-----------------
+
+# You must do the import from inside the directory.
+# Note my little example of cleaning up where I rm all the backup
+# files that end in ~
+# The last two args of the import are always the same:
+# vendor start
+# Just change -d, -m, and, ms_results.
+
+cd ms_results
+rm -i *~ 
+cvs -d:ext:mst3k@cvs.example.com:/p5/cvs import -m "Initial import." ms_results vendor start
+cd ../
+
+# Also:
+cvs -d:ext:mst3k@cvs.example.com:/p5/cvs import -m "Initial import." ms_results vendor rel_0_0_1
+
+# As far as I know, you must remove or rename the 'old' directory, and
+# let CVS rebuild it.  For the co, you must be in the parent directory.
+# You heard it before, but be careful with the rm -fr. In the example
+# below I mv the directory instead of rm'ing it.
+
+mv ms_results ms_results.import
+cvs -d:ext:mst3k@cvs.example.com:/p5/cvs co ms_results
+
+# Use the longer version of the "checkout" command for the module ms_results, 
+# This also creates a directory ms_lims_dev instead of the default ms_lims.
+# Note: the first -d on the command line is for "cvs". The second
+# -d is for "checkout"
+
+cvs -d:ext:mst3k@cvs.example.com:/p5/cvs checkout-d ms_results_dev ms_results
+
+# You don't need -d ... after the initial co (checkout).
+
+cd ms_results
+cvs commit -m"stuff" filename
+cvs log filename
+
+#  Here is an example of how to check out a project into a directory
+# (which may already exist) that is named differently from the project
+# name. In this case we want to checkout into a directory "discovery"
+# instead of "cmc_discovery".  The weird thing about this command (and
+# CVS commands in general) is that each half of the command has
+# separate switches. Below the left -d has different meaning from the
+# right -d. 
+
+cvs -d :ext:mst3k@cvs.example.com:/users/CVS/source co -d discovery cmc_discovery
+
+
+
+
+Avoid wrong path mistake
+------------------------
+
+# WARNING WARNING WARNING WARNING WARNING
+# Do not put the project name at the end of the CVS path!
+# This is wrong: /cvsroot/geoss 
+# WARNING WARNING WARNING WARNING WARNING
+
+# Here's what I did (or should have done) to import geoss into the
+# sourceforge.net project. (Since this was written Sourceforge may
+# have changed the cvs host names. Caveat emptor, YMMV.)
+
+cd geoss
+cvs -d:ext:mst3k@cvs.sourceforge.net:/cvsroot import -m "Initial import" geoss vendor start
+cvs -d:ext:mst3k@cvs.sourceforge.net:/cvsroot checkout geoss
+
+
+
+
+Tag, export, and make a tar file
+--------------------------
+ 
+Tag a new version, export, and create a tar file.  You start by
+creating a subdirectory tree named "geoss" in the current
+directory. Export needs to be done from inside the directory tree of
+the project because CVS need access to the CVS directories/files. Be
+careful with the rm -fr.
+
+
+cd geoss
+cvs tag Rel-X_Y_Z
+cvs export -r Rel-X_Y_Z -d geoss-X_Y_Z geoss
+mv geoss-X_Y_Z ../
+cd ..
+tar -cvf geoss-X_Y_Z.tar ./geoss-X_Y_Z
+rm -fr ./geoss-X_Y_Z
+ 
+# This alternative works if the CVSROOT from the above command is incorrect.
+ 
+cvs -d:ext:mst3k@cvs.sourceforge.net:/cvsroot/geoss  checkout ./
+
+
+If you are in the directory tree of a working CVS project, but you get
+error messages when you try to export, you might try . (dot) as the
+project/module name.
+
+This command will export tagged release "rel-6_3" of the current
+project into the directory "tmp".
+
+cvs export -r rel-6_3 -d tmp .
+
+This is helpful when you get a message like:
+
+cvs [export aborted]: must specify at least one module or directory
+cvs server: cannot find module `deft' - ignored
+cvs [export aborted]: cannot expand modules
+
+
+
+
+Keyword substitution and identification markers
+-----------------------------------------------
+
+CVS uses RCS behind the scenes (or something nearly identical to
+RCS). As a result, if you want to know about keywords that CVS can
+use, you need to read the co man page. (I would have thought that the
+substititions happen at commit, check in, which is ci, but the
+keywords are documented in man co.)
+
+Also called "identification markers" and there is a reference to them
+(without details) in the "Automatic Identification" section of the man
+rcsintro. 
+
+The keyword substitutions are:
+
+$Author$
+$Date$
+$Header$
+$Id$
+$Locker$
+$Log$
+$Name$
+$RCSfile$
+$Revision$
+$Source$
+$State$
+
+Include any of the preceding strings in your source code. CVS (co)
+will substitute a value for this string when you commit (check in) the
+file. CVS is smart enough to continue to use the substitution, even
+thoug after the first time the string has more detail than the
+original.
+
+For instance, you include this in some Perl code:
+
+#Last update (UTC time): $Date$
+
+After commit, your file is changed, and looks like the following:
+
+#Last update (UTC time): $Date: 2007/04/02 15:47:24 $
+
+There is one tiny side effect of this. Emacs knows when the file being
+edited has changed on disk. After commiting a file with keyword
+substitutions, Emacs will notify you when you try to modify the
+file. You will get this message in the mini-buffer:
+
+xyz.txt changed on disk; really edit the buffer? (y, n, r or C-h) 
+
+The proper response is "r" (just press the r key; no need to hit
+return). The r is for refresh, which means update the buffer to use
+the new file from disk.
+
+(You may find that if you hit some key besides y, n, r, or C-h, emacs
+responds: Please type y, n or r; or ? for help).
+
+I generally use the keyword substitution in the header (top few lines)
+of my sources. The date is handy, however, for unknown reasons the
+date insists on using UTC instead of your machine's current time zone.
+
+Use -ko to disable keyword substitution. The docs say there is no way
+to selectively disable one or more keywords. It is either all or none.
+
+
+
+
+Keywords and merge
+------------------
+
+I accidentally found a note in the CVS docs about keywords and
+merge. When merging, you and another person have edited the same
+file. Each of you may have different keyword values from your check
+in, and this will cause problems with the merge. Use the -kk option to
+get around this problem.
+
+# on the CVS server in cvs.example.com:/p5/cvs
+find ./
+./
+./.kde
+./.kde/Autostart
+./.kde/Autostart/.directory
+./.emacs
+./.bash_logout
+./.bash_profile
+./.bashrc
+./.gtkrc
+./CVSROOT
+./CVSROOT/Emptydir
+... (some files here left blank for brevity)
+./CVSROOT/.#modules
+... (some files here left blank for brevity)
+./ms_project
+./ms_project/cell_schema.jpg,v
+... (some files here left blank for brevity)
+
+
+
+
+Notes and comments
+------------------
+
+# get what someone would get with an anonymous checkout
+# I think.
+cvs export -r Rel-X_Y_Z -d va-genex-X_Y_Z va-genex
+
+# initial developer checkout
+# Not tested. See above for tested commands
+
+cvs -d:ext:mst3k@cvs.sourceforge.net:/cvsroot co va-genex
+
+# How to tag a new version
+cd /home/mst3k/public_html/genex-server
+cvs tag Rel-1_5_1
+
+cvs remove -f <dir>
+
+cvs update -P
+(removes empty directories, empties are always removes with cvs export)
+
+# This works. We tried it.
+# Removed /genex/ from path. Seems wrong.
+# May have only worked because genex was a branch.
+
+cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot co -r  Rel-1_0_1-branch genex-server
+
+
+# developer checkout branch (which we don't use!)
+cvs checkout -r Rel-1_0_1-branch genex-server
+
+
+
