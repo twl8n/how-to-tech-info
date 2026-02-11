@@ -7,7 +7,7 @@ keywords:bash,shell,commmand,parameter,file,name,path,regular,expression,glob,lo
 description:Shell trivia and scripting examples including file name and path substitutions, as well as how to detect a live human logging in, and how to fix the session title and titlebar.
 
 
-#### Table of contents
+Table of contents
 -----------------
 - Introduction
 - Link to list of hints
@@ -21,7 +21,7 @@ description:Shell trivia and scripting examples including file name and path sub
 
 
 
-#### Introduction
+Introduction
 ------------
 
 Shell programming and expecially shell variables are weird things. The
@@ -66,13 +66,13 @@ For examples of shell scripts, check out the scripts in /etc/init.d.
 
 
 
-#### Link to list of hints
+Link to list of hints
 ---------------------
 
 This information is implied by the bash man page (which is lacking
 examples). There are also home nice hints at:
 
-(http://linuxgazette.net/issue18/bash.html)
+http://linuxgazette.net/issue18/bash.html
 
 
 
