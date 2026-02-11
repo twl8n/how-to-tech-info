@@ -1,11 +1,14 @@
 date: Apr  9  2005
+
 title:Apache Explanation of (13)Permission denied: cannot read directory for multi:
+
 keywords:apache,httpd,permissions,multiview,multi,view,error,apache 2,apache2
+
 description:When permissions are NOT the problem, a common cause of the 13 error explained.
 
 The error:
 
-(13)Permission denied: cannot read directory for multi: /home/mst3k/public_html/
+`(13)Permission denied: cannot read directory for multi: /home/mst3k/public_html/`
 
 is caused my having the MultiViews enabled when public_html
 permissions are 711.
@@ -35,20 +38,21 @@ going on. This is my Options line from my .htaccess file (the same
 line works just as well in a <Directory> directive in your httpd.conf
 file). 
 
-Options +ExecCGI +FollowSymLinks -Indexes -MultiViews
+`Options +ExecCGI +FollowSymLinks -Indexes -MultiViews`
 
 Given the example case where you serve web pages from a public_html
 directory in the user's home directory, here are the following
 ownership and permissions for a mythical user "mst3k" on a machine
 named "example".
 
-
+```
 [mst3k@example mst3k]$ ls -ld /home /home/mst3k
 /home/mst3k/public_html
 drwx--x--x  111 root     root           4096 Mar 11 18:56 /home
 drwx--x--x   24 mst3k    mst3k          4096 Apr  9 10:19 /home/mst3k
 drwx--x--x   32 mst3k    mst3k          8192 Apr  9 11:05 /home/mst3k/public_html
 [mst3k@example mst3k]$
+```
 
 1) root owns /home and users are not allowed to get a listing of
    /home. This prevents users from listing all the home directories.
