@@ -110,11 +110,13 @@ be to disable xon/xoff flow control for the human.
 From the bash prompt, "konsole -e /bin/bash --login" seems to work,
 but gives an interesting KDE error:
 
+```
 [zeus ~]$ konsole -e /bin/bash --login
 konsole(659): Attempt to use QAction "change-profile" with KXMLGUIFactory!
 [zeus ~]$ Undecodable sequence: \001b(hex)[?1034h
+```
 
-Also "/bin/bash -i" does *not* create an interactive session. I'm
+Also `/bin/bash -i` does *not* create an interactive session. I'm
 guessing this is due to shopt login_shell being somehow inherited by
 child processes.
 
@@ -164,12 +166,13 @@ Note: -ls only applies to older versions of konsole. See above.
 You can see the output of shopt in human readable form by leaving off
 the -q option (-q for quiet):
 
-shopt login_shell
+`shopt login_shell`
 
 or 
 
-shopt
+`shopt`
 
+```
 # The newer (?) method of detecting an interactive shell.
 # This works with Fedora Core 6, and probably most modern versions of
 # Linux. Disable xon xoff, and alias rm to rm -i
@@ -178,7 +181,7 @@ if shopt -q login_shell ; then
       stty start undef
      alias rm='rm -i'
 fi
-
+```
 
 Below is another technique for testing to see if a login is an
 interactive session. For reasons not quite clear, Apple's OSX has a 
@@ -192,6 +195,7 @@ xterm, "linux" (a terrible name for a tty since this is also the true
 and real name of the operating system/kernel(?)), vt100, and mabe even
 "ansi" (another terrible name for a tty).
 
+```
 # This works for OSX and should be fine for Linux too.
 # if [ ! -z "$(echo $- | grep i)" ]
 
@@ -201,6 +205,7 @@ and real name of the operating system/kernel(?)), vt100, and mabe even
 # csh(?) or some other shells). Do this:
 
 echo $-
+```
 
 The result in my shell is "himBH". The "i" undocumented, but means
 that the shell is "interactive". The bash man page describes the other
@@ -215,6 +220,7 @@ piped to "grep" you must check against equivalence to 1.
 I don't know why the command has to be surrounded by double quotes,
 parentheses, and preceded by $. 
 
+```
 if [ "$(echo $- | grep -c i)" == 1 ]
 then
     stty stop undef
@@ -261,10 +267,7 @@ stty: standard input: Invalid argument
 stty: standard input: Invalid argument
 tmp.txt                                                       100% 1919     1.9KB/s   00:00
 [mst3k@zeus ~]$ scp x_next.txt hera.example.com:
-
-
-
-
+```
 
 
 
@@ -279,6 +282,7 @@ not be compatible with sh. These are "interesting" regex or globbing
 examples. I say "interesting" because they don't seem to follow the
 path of "true" regular expressions used by Perl.
 
+```
 [mst3k@zeus ~]$ echo ${HOME/\/home\//}
 mst3k
 [mst3k@zeus ~]$ echo ${HOME##home}
@@ -292,7 +296,7 @@ mst3k
 [mst3k@zeus ~]$ echo ${HOME##*/}
 mst3k
 [mst3k@zeus ~]$
-
+```
 
 
 
@@ -303,11 +307,12 @@ Linux and unix-like systems are not inclined to tell you the return
 status of commands you run at the shell prompt. Use this little one
 line shell if statement to check true/false return values.
 
+```
 [zeus ~]$ if  shopt -q login_shell; then echo "yes"; fi;
 yes
 [zeus ~]$ if !  shopt -q login_shell; then echo "yes"; fi;
 [zeus ~]$   
-
+```
 
 Here is a better example, and includes a Perl script with different
 exit values.
@@ -317,6 +322,7 @@ below. Here is a session transcript that should be clear. Yes, the
 Perl script is 6 lines. Yes, I strongly prefer my curly braces on
 separate lines.
 
+```
 [zeus ~]$ cat try.pl
 #!/usr/bin/perl
 if ($ARGV[0])
@@ -329,7 +335,7 @@ yes
 [zeus ~]$ if ./try.pl ; then echo "yes"; else echo "no"; fi;
 no
 [zeus ~]$
-
+```
 
 
 Can't write a file
@@ -347,15 +353,15 @@ configuration issues, the CGI scripts are running as www.
 Here is the solution (more explanation below). Add a tee command to
 your sudoers file:
 
-www  ALL=(ALL) NOPASSWD:  /usr/bin/tee
+`www  ALL=(ALL) NOPASSWD:  /usr/bin/tee`
 
 Or perhaps the more secure version:
 
-www  ALL=(ALL) NOPASSWD:  /usr/bin/tee -a /var/log/text.txt
+`www  ALL=(ALL) NOPASSWD:  /usr/bin/tee -a /var/log/text.txt`
 
 Use this command in your script:
 
-/bin/echo "i like pie" | sudo /usr/bin/tee -a /var/log/test.txt >/dev/null
+`/bin/echo "i like pie" | sudo /usr/bin/tee -a /var/log/test.txt >/dev/null`
 
 
 For instance you have a CGI script written in Perl, and www is in
@@ -365,13 +371,13 @@ adding /bin/echo to your sudoers doesn't solve the problem. You might
 solve the problem by using another shell and su'ing or sudo'ing the
 new shell.
 
-
+```
 #!/usr/bin/perl
 `/bin/echo "i like pie" | sudo /usr/bin/tee -a /var/log/test.txt > /dev/null`;
 my $id = `/usr/bin/id`;
 print "Content-type: text/html\n\n<html><body>Script runs as:<br>$id</body></html>\n";
 exit(0);
-
+```
 
 
 Keep in mind when trying to diagnose this problem that your script has
@@ -393,9 +399,10 @@ to run. The debugging processs has steps such as:
    are details about this elsewhere in these readme and mini howto
    documents, but your .htaccess should include:
 
+```
 Options +ExecCGI
 AddHandler cgi-script .pl
-
+```
 
 Fixing the session title
 ------------------------
@@ -408,12 +415,12 @@ system.
 
 Briefly, the format is:
 
-export PROMPT_COMMAND='echo -ne "\033]0;title; echo -ne "\007"'
+`export PROMPT_COMMAND='echo -ne "\033]0;title; echo -ne "\007"'`
 
 Usually, we want this to be the userid, hostname, and current directory (pwd
 is "print working directory").
 
-export PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}"; echo -ne "\007"'
+`export PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}"; echo -ne "\007"'`
 
 Put the line above into your .bashrc file. You can test this two ways:
 
@@ -445,8 +452,10 @@ In fact, if you really want to know all about your environment (in the
 general sense of the word) you need two commands, and I like to have
 the env vars sorted (set automatically sorts):
 
+```
 env | sort
 set
+```
 
 When I export PROMPT_COMMAND is it both an env var and a set var. I'm
 missing the distinction between the two kinds of variables. 
@@ -470,20 +479,9 @@ convert to normal printing characters to produce a random string
 useful as a password. Encoding as uuencode or base64 handles this
 problem. 
 
-dd if=/dev/urandom ibs=6 count=1 | base64
+`dd if=/dev/urandom ibs=6 count=1 | base64`
 
-dd if=/dev/urandom ibs=6 count=1 | gmime-uuencode -m -
-
-
-
-
-A little rant about examples
-----------------------------
-
-Authors of documentation, need to include a large number of examples.
-If you love your operating system then please include examples. The
-operating system with the most documentation examples will win the
-war.
+`dd if=/dev/urandom ibs=6 count=1 | gmime-uuencode -m -`
 
 
 
