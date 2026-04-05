@@ -19,7 +19,11 @@ There is a cooling fan. The fan is temperature sensing and only runs when requir
 
 As of April 5, 2026, the Frigidaire FPIC3077RF is listed as "Out of Stock". I purchased from Amazon via a third party reseller. I suspect this unit will soon be discontinued. I also expect Frigidaire to carry parts for many years in the future. Remember, even if you buy a currently-produced unit, in a few years it will also be discontinued. Buy a brand/manufacturer that will continue to carry parts for many years (or basically forever).
 
+#### Manufacturer's page
+
 https://www.frigidaire.com/en/p/kitchen/cooktops/induction-cooktops/FPIC3077RF
+
+#### Photos
 
 ![Frigidaire Professional FPIC3077RF Inductive Cooktop](image/IMG_6137.jpg)
 
