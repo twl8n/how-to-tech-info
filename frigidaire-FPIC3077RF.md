@@ -24,6 +24,7 @@ As of April 5, 2026, the Frigidaire FPIC3077RF is listed as "Out of Stock". I pu
 #### Manufacturer's page
 
 [Frigidaire FPIC3077R official page](https://www.frigidaire.com/en/p/kitchen/cooktops/induction-cooktops/FPIC3077RF)
+{:target="_blank"}
 ![link small external](image/link-external-small.png)
 
 #### Photos
